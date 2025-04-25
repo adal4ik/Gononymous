@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f4f8;
+            color: #333;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #2c3e50;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            margin: 0 12px;
+            text-decoration: none;
+            color: #3498db;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        table.postForm {
+            width: 100%;
+        }
+
+        table.postForm td {
+            padding: 10px 5px;
+            vertical-align: top;
+        }
+
+        input[type="text"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+
+        @media (max-width: 500px) {
+            form {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Create a New Post</h1>
+    <nav>
+        [<a href="/catalog">Catalog</a>] |
+        [<a href="/archive">Archive</a>]
+    </nav>
+</header>
+
+<main>
+    <form action="/submit-post" method="POST" enctype="multipart/form-data">
+        <table class="postForm">
+            <tbody>
+            <tr>
+                <td><label for="name">Name</label></td>
+                <td><input id="name" name="name" type="text" placeholder="Anonymous"></td>
+            </tr>
+            <tr>
+                <td><label for="subject">Subject</label></td>
+                <td><input id="subject" name="subject" type="text"></td>
+            </tr>
+            <tr>
+                <td><label for="comment">Comment</label></td>
+                <td><textarea id="comment" name="comment" cols="48" rows="4" placeholder="Write your post here..."></textarea></td>
+            </tr>
+            <tr>
+                <td><label for="file">File</label></td>
+                <td><input id="file" name="file" type="file"></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" value="Post"></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</main>
+
+</body>
+</html>
