@@ -7,7 +7,7 @@ import (
 )
 
 type Repository struct {
-	PostRepo drivenports.PostDrivenPortInterface
+	PostRepo drivenports.DatabasePortInterface
 }
 
 func New(db *sql.DB) *Repository {

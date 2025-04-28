@@ -4,4 +4,5 @@ import "Gononymous/internal/core/domains/dto"
 
 type PostDriverPortInterface interface {
 	AddPost(post dto.PostDto) error
+	GetAll() ([]dto.PostDto, error)
 }

@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"Gononymous/internal/core/domains/dto"
 	"fmt"
+	"html/template"
 	"net/http"
 
-	"Gononymous/internal/core/domains/dto"
 	driverports "Gononymous/internal/core/ports/driver_ports"
 )
 
@@ -17,7 +18,8 @@ func NewPostHandler(service driverports.PostDriverPortInterface) *PostsHandler {
 }
 
 func (postHandler *PostsHandler) MainPage(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "create-post.html")
+	tmpl := template.Must(template.ParseFiles("web/templates/create-post.html"))
+	tmpl.Execute(w, nil)
 }
 
 func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *http.Request) {

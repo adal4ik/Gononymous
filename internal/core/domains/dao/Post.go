@@ -1,9 +1,8 @@
 package dao
 
 import (
-	"time"
-
 	"Gononymous/internal/core/domains/dto"
+	"time"
 )
 
 type PostDao struct {
@@ -14,6 +13,7 @@ type PostDao struct {
 	Subject   string
 	Content   string
 	ImageUrl  string
+	Status    string
 }
 
 func ParseDTOtoDAO(post dto.PostDto) PostDao {

@@ -49,19 +49,22 @@
 
         .posts .list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 100%));
             gap: 20px;
             list-style: none;
             padding: 0;
         }
 
         .post {
+            width: 100%;
             background-color: #fff;
             border: 1px solid #e0e0e0;
             border-radius: 10px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             transition: transform 0.2s ease;
+            display:grid;
+            grid-template-columns: 200px auto;
         }
 
         .post:hover {
@@ -111,13 +114,17 @@
 <main>
     <section class="posts">
         <ul class="list">
-            {{range .}}
-            <li class="post">
-                <a href="/post/{{.ID}}">
-                    <img src="{{.ImageURL}}" alt="Post Image">
-                    <h3>{{.Title}}</h3>
-                </a>
-            </li>
+            {{range .Posts}}
+            <a href="/post/{{.ID}}"></a>
+                <li class="post">
+                    <img src="{{.Image}}" alt="Post Image">
+                    <div style="padding: 10px;">
+                        <h3  style="padding: 0;">{{.Title}}</h3>
+                        <h5>{{.Subject}}</h2>
+                        <p>{{.Content}}</p>    
+                    </div>
+                </li>
+            </a>
             {{end}}
         </ul>
     </section>

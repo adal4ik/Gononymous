@@ -14,7 +14,8 @@ CREATE TABLE posts(
     title VARCHAR(50) NOT NULL,
     subject VARCHAR(50),
     content TEXT,
-    image_url TEXT
+    image_url TEXT,
+    status VARCHAR(30)
 );
 
 CREATE TABLE comments(

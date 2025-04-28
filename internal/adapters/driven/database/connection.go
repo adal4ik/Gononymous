@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -19,9 +18,7 @@ var (
 )
 
 func ConnectDB() *sql.DB {
-	fmt.Println(host)
-	fmt.Println(user)
-	time.Sleep(5 * time.Second)
+	// time.Sleep(5 * time.Second)
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, name)

@@ -1,7 +1,11 @@
 package handlers
 
-import "net/http"
+import (
+	"html/template"
+	"net/http"
+)
 
 func ArchiveHandler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "archive.html")
+	tmpl := template.Must(template.ParseFiles("web/templates/archive.html"))
+	tmpl.Execute(w, nil)
 }

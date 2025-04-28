@@ -1,9 +1,8 @@
 package handlers
 
 import (
-	"log/slog"
-
 	"Gononymous/internal/core/services"
+	"log/slog"
 )
 
 type BaseHandler struct {
@@ -22,6 +21,6 @@ type Handler struct {
 func New(service *services.Service) *Handler {
 	return &Handler{
 		PostHandler:    NewPostHandler(service.PostsService),
-		CatalogHandler: NewCatalogHandler(),
+		CatalogHandler: NewCatalogHandler(service.PostsService),
 	}
 }
