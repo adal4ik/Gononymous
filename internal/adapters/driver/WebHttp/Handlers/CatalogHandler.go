@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"Gononymous/internal/adapters/driver/WebHttp/middleware"
 	"net/http"
 
 	driverports "Gononymous/internal/core/ports/driver_ports"
@@ -16,6 +15,6 @@ func NewCatalogHandler() *CatalogHandler {
 }
 
 func (c *CatalogHandler) MainPage(w http.ResponseWriter, r *http.Request) {
-	middleware.CreateCookie(w, r)
+	// middleware.CreateCookie(w, r)
 	renderTemplate(w, "catalog.html")
 }

@@ -7,11 +7,13 @@ import (
 )
 
 type Repository struct {
-	PostRepo drivenports.PostDrivenPortInterface
+	PostRepo    drivenports.PostDrivenPortInterface
+	SessionRepo drivenports.SessionRepoInterface
 }
 
 func New(db *sql.DB) *Repository {
 	return &Repository{
 		PostRepo: NewPostRepository(db),
+		// SessionRepo: NewSessionRepo(db),
 	}
 }

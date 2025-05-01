@@ -1,9 +1,8 @@
 package db
 
 import (
-	"database/sql"
-
 	"Gononymous/internal/core/domains/dao"
+	"database/sql"
 )
 
 type PostRepository struct {
