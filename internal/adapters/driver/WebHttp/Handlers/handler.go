@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"Gononymous/internal/core/services"
+	"Gononymous/utils"
 	"log/slog"
+	"net/http"
 )
 
 type BaseHandler struct {
@@ -18,9 +20,24 @@ type Handler struct {
 	CatalogHandler *CatalogHandler
 }
 
-func New(service *services.Service) *Handler {
+func (b *BaseHandler) handleError(w http.ResponseWriter, r *http.Request, code int, message string, err error) {
+	if err != nil {
+		b.logger.Error(message, "error", err, "code", code, "url", r.URL.Path)
+	} else {
+		b.logger.Error(message, "code", code, "url", r.URL.Path)
+	}
+
+	jsonErr := utils.APIError{
+		Code:     code,
+		Message:  message,
+		Resource: r.URL.Path,
+	}
+	jsonErr.Send(w)
+}
+
+func New(service *services.Service, baseHandler BaseHandler) *Handler {
 	return &Handler{
-		PostHandler:    NewPostHandler(service.PostsService),
-		CatalogHandler: NewCatalogHandler(service.PostsService),
+		PostHandler: NewPostHandler(service.PostsService, baseHandler),
+		// CatalogHandler: NewCatalogHandler(),
 	}
 }

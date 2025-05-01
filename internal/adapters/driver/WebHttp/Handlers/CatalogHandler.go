@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"Gononymous/internal/adapters/driver/WebHttp/middleware"
 	"Gononymous/internal/core/domains/dto"
 	"fmt"
 	"html/template"
@@ -36,6 +35,5 @@ func (c *CatalogHandler) MainPage(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Template execution error: %v", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 	}
-	middleware.CreateCookie(w, r)
 	renderTemplate(w, "catalog.html")
 }

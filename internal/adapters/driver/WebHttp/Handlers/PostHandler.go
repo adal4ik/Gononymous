@@ -11,10 +11,11 @@ import (
 
 type PostsHandler struct {
 	service driverports.PostDriverPortInterface
+	BaseHandler
 }
 
-func NewPostHandler(service driverports.PostDriverPortInterface) *PostsHandler {
-	return &PostsHandler{service: service}
+func NewPostHandler(service driverports.PostDriverPortInterface, baseHandler BaseHandler) *PostsHandler {
+	return &PostsHandler{service: service, BaseHandler: baseHandler}
 }
 
 func (postHandler *PostsHandler) MainPage(w http.ResponseWriter, r *http.Request) {
