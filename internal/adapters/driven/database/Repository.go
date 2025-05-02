@@ -7,7 +7,7 @@ import (
 )
 
 type Repository struct {
-	PostRepo    drivenports.PostDrivenPortInterface
+	PostRepo    drivenports.DatabasePortInterface
 	SessionRepo drivenports.SessionRepoInterface
 }
 

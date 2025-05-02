@@ -1,10 +1,11 @@
 package services
 
 import (
+	"time"
+
 	"Gononymous/internal/core/domains/dao"
 	"Gononymous/internal/core/domains/dto"
 	"Gononymous/utils"
-	"time"
 
 	drivenports "Gononymous/internal/core/ports/driven_ports"
 )
@@ -28,3 +29,5 @@ func (postService *PostService) AddPost(post dto.PostDto) error {
 	}
 	return nil
 }
+
+func (postService *PostService) GetAll() ([]dto.PostDto, error)
