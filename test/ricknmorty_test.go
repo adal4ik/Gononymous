@@ -1,0 +1,26 @@
+package test
+
+import (
+	externalapi "Gononymous/internal/adapters/driven/external_api"
+	"context"
+	"testing"
+)
+
+func TestRickAndMortySerivice_GetCharacter(t *testing.T) {
+	ctx := context.Background()
+	r := externalapi.NewCharacterSerivice()
+
+	ch, err := r.GetCharacter(ctx, 1)
+	if err != nil {
+		t.Fatal("Failed to ger charcater: %w", err)
+	}
+
+	if ch.Name != "Rick Sanchez" {
+		t.Errorf("Expected Rick Sanchez, got %s", ch.Name)
+	}
+
+	if ch.AvatarURL != "https://rickandmortyapi.com/api/character/avatar/1.jpeg" {
+		t.Error("Wrong Image URL")
+	}
+	t.Log(ch)
+}
