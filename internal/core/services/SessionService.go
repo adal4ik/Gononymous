@@ -5,6 +5,7 @@ import (
 	drivenports "Gononymous/internal/core/ports/driven_ports"
 	"Gononymous/utils"
 	"context"
+	"fmt"
 	rnd "math/rand"
 	"sync"
 )
@@ -47,13 +48,18 @@ func (p *Picker) Pick() int {
 	return id
 }
 
-func (s *SessionService) CreateSession(ctx context.Context) error {
+func (s *SessionService) CreateSession(ctx context.Context) (string, error) {
+	fmt.Println("create session")
+
 	ch, err := s.Character.GetCharacter(ctx, s.Picker.Pick())
 	if err != nil {
-		return err
+		return "", err
 	}
 	id := utils.UUID()
 	session := dao.Session{UsersId: id, Name: ch.Name, AvatarURL: ch.AvatarURL}
 	err = s.SessionRepo.AddSession(ctx, session)
-	return err
+	if err != nil {
+		return "", err
+	}
+	return id, nil
 }

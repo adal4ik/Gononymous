@@ -31,7 +31,7 @@ func main() {
 	services := services.New(repositories)
 	handlers := handlers.New(services, *baseHandler)
 
-	mux := WebHttp.Rounter(handlers)
+	mux := WebHttp.Router(handlers, services.SessionService)
 
 	httpServer := &http.Server{
 		Addr:    port,

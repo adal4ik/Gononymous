@@ -8,7 +8,7 @@ import (
 
 func TestCharacterSerivice_GetCharacter(t *testing.T) {
 	ctx := context.Background()
-	r := externalapi.NewCharacterSerivice()
+	r := externalapi.NewCharacterClient()
 
 	ch, err := r.GetCharacter(ctx, 1)
 	if err != nil {

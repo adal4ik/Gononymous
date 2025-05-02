@@ -4,6 +4,7 @@ import (
 	"Gononymous/internal/core/domains/dao"
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 type SessionRepo struct {
@@ -15,6 +16,7 @@ func NewSessionRepo(db *sql.DB) *SessionRepo {
 }
 
 func (s *SessionRepo) AddSession(ctx context.Context, session dao.Session) error {
+	fmt.Println("ses repo")
 	query := `INSERT INTO users(user_id, name, avatar_url)
 			VALUES($1,$2,$3)`
 	_, err := s.db.ExecContext(ctx, query, session.UsersId, session.Name, session.AvatarURL)
