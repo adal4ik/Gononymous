@@ -1,7 +1,10 @@
 package driverports
 
-import "Gononymous/internal/core/domains/dto"
+import (
+	"Gononymous/internal/core/domains/dto"
+	"context"
+)
 
 type PostDriverPortInterface interface {
-	AddPost(post dto.PostDto) error
+	AddPost(ctx context.Context, post dto.PostDto) error
 }

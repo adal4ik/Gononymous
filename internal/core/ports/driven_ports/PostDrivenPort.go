@@ -1,7 +1,10 @@
 package drivenports
 
-import "Gononymous/internal/core/domains/dao"
+import (
+	"Gononymous/internal/core/domains/dao"
+	"context"
+)
 
 type PostDrivenPortInterface interface {
-	AddPost(post dao.PostDao) error
+	AddPost(ctx context.Context, post dao.PostDao) error
 }

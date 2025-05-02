@@ -33,7 +33,7 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 	post.Subject = r.Form["subject"][0]
 	post.Content = r.Form["comment"][0]
 	post.Image = r.Form["file"][0]
-	err := postHandler.service.AddPost(post)
+	err := postHandler.service.AddPost(r.Context(), post)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

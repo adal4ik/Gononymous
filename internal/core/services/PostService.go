@@ -4,6 +4,7 @@ import (
 	"Gononymous/internal/core/domains/dao"
 	"Gononymous/internal/core/domains/dto"
 	"Gononymous/utils"
+	"context"
 	"time"
 
 	drivenports "Gononymous/internal/core/ports/driven_ports"
@@ -17,11 +18,11 @@ func NewPostService(repo drivenports.PostDrivenPortInterface) *PostService {
 	return &PostService{repo: repo}
 }
 
-func (postService *PostService) AddPost(post dto.PostDto) error {
+func (postService *PostService) AddPost(ctx context.Context, post dto.PostDto) error {
 	postDao := dao.ParseDTOtoDAO(post)
 	postDao.CreatedAt = time.Now()
 	postDao.PostId = utils.UUID()
-	err := postService.repo.AddPost(postDao)
+	err := postService.repo.AddPost(ctx, postDao)
 	if err != nil {
 		return err
 	}

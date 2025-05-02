@@ -9,18 +9,18 @@ import (
 	"net/http"
 )
 
-type RickAndMortySerivice struct {
+type CharacterSerivice struct {
 	client *http.Client
 }
 
-func NewRickAndMortySerivice() *RickAndMortySerivice {
+func NewCharacterSerivice() *CharacterSerivice {
 	customCLinet := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
-	return &RickAndMortySerivice{
+	return &CharacterSerivice{
 		client: customCLinet,
 	}
 }
 
-func (r *RickAndMortySerivice) GetCharacter(ctx context.Context, id int) (*dto.Character, error) {
+func (r *CharacterSerivice) GetCharacter(ctx context.Context, id int) (*dto.Character, error) {
 	url := fmt.Sprintf("https://rickandmortyapi.com/api/character/%d", id)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
