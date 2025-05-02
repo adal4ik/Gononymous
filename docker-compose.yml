@@ -11,8 +11,19 @@ services:
       - "5432:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  s3:
+    build: ./S3
+    ports:
+      - "9000:9000"
+    environment:
+      - STORAGE_PATH=/data
+
+    volumes:
+      - s3-data:/data  # Changed from bind mount to named volume
+    user: "1000:1000"  # Run as non-root user
+    
   app:
-    build: .
+    build: ./backend
     ports:
       - "8080:8080"
     environment:
@@ -23,3 +34,6 @@ services:
       - DB_PORT=5432
     depends_on:
       - db
+      - s3
+volumes:
+  s3-data:
