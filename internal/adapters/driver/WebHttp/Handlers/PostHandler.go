@@ -1,10 +1,12 @@
 package handlers
 
 import (
-	"Gononymous/internal/core/domains/dto"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
+
+	"Gononymous/internal/core/domains/dto"
 
 	driverports "Gononymous/internal/core/ports/driver_ports"
 )
@@ -34,8 +36,13 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 	post.Title = r.Form["name"][0]
 	post.Subject = r.Form["subject"][0]
 	post.Content = r.Form["comment"][0]
-	post.Image = r.Form["file"][0]
-	err := postHandler.service.AddPost(post)
+	in, _, err := r.FormFile("file")
+	defer in.Close()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	data, err := io.ReadAll(in)
+	err = postHandler.service.AddPost(post, data)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

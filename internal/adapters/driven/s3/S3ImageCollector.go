@@ -16,16 +16,15 @@ func NewS3ImageCollector() *S3ImageCollector {
 }
 
 func (s *S3ImageCollector) SaveImage(img []byte) (string, error) {
-	dirName := "Images"
+	dirName := "../../Images/"
 
-	// Detect file extension
 	ext, err := detectImageExtension(img)
 	if err != nil {
 		return "", fmt.Errorf("could not detect image type: %w", err)
 	}
 
 	fileName := utils.UUID() + ext
-
+	fmt.Println(fileName)
 	if err := os.MkdirAll(dirName, 0o755); err != nil {
 		return "", err
 	}
@@ -34,7 +33,9 @@ func (s *S3ImageCollector) SaveImage(img []byte) (string, error) {
 	if err := os.WriteFile(filePath, img, 0o666); err != nil {
 		return "", err
 	}
-
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return "", err
+	}
 	return filePath, nil
 }
 

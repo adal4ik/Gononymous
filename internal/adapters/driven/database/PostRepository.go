@@ -1,8 +1,9 @@
 package db
 
 import (
-	"Gononymous/internal/core/domains/dao"
 	"database/sql"
+
+	"Gononymous/internal/core/domains/dao"
 )
 
 type PostRepository struct {
@@ -24,7 +25,7 @@ func (postRepository *PostRepository) AddPost(post dao.PostDao) error {
 }
 
 func (postRepository *PostRepository) GetAll() ([]dao.PostDao, error) {
-	sqlQuery := `SELECT post_id, created_at, title, subject, content FROM posts;`
+	sqlQuery := `SELECT post_id, created_at, title, subject, content,image_url FROM posts;`
 	rows, err := postRepository.db.Query(sqlQuery)
 	if err != nil {
 		return nil, err
@@ -37,8 +38,7 @@ func (postRepository *PostRepository) GetAll() ([]dao.PostDao, error) {
 	for rows.Next() {
 		var post dao.PostDao
 
-		err = rows.Scan(&post.PostId, &post.CreatedAt, &post.Title, &post.Subject, &post.Content)
-
+		err = rows.Scan(&post.PostId, &post.CreatedAt, &post.Title, &post.Subject, &post.Content, &post.ImageUrl)
 		if err != nil {
 			return nil, err
 		}

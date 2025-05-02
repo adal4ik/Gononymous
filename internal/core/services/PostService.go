@@ -11,23 +11,40 @@ import (
 )
 
 type PostService struct {
-	repo drivenports.DatabasePortInterface
+	repo           drivenports.DatabasePortInterface
+	imageCollector drivenports.ImageCollectionInterface
 }
 
-func NewPostService(repo drivenports.DatabasePortInterface) *PostService {
-	return &PostService{repo: repo}
+func NewPostService(repo drivenports.DatabasePortInterface, imageCollector drivenports.ImageCollectionInterface) *PostService {
+	return &PostService{repo: repo, imageCollector: imageCollector}
 }
 
-func (postService *PostService) AddPost(post dto.PostDto) error {
+func (postService *PostService) AddPost(post dto.PostDto, data []byte) error {
+	var err error
 	postDao := dao.ParseDTOtoDAO(post)
 	postDao.CreatedAt = time.Now()
 	postDao.PostId = utils.UUID()
 	postDao.Status = "Active"
-	err := postService.repo.AddPost(postDao)
+	postDao.ImageUrl, err = postService.imageCollector.SaveImage(data)
+	if err != nil {
+		return err
+	}
+	err = postService.repo.AddPost(postDao)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (postService *PostService) GetAll() ([]dto.PostDto, error)
+func (postService *PostService) GetAll() ([]dto.PostDto, error) {
+	posts, err := postService.repo.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	var postsDTO []dto.PostDto
+
+	for i := 0; i < len(posts); i++ {
+		postsDTO = append(postsDTO, dto.PostDto{ID: posts[i].PostId, Title: posts[i].Title, Subject: posts[i].Subject, Content: posts[i].Content, Image: posts[i].ImageUrl})
+	}
+	return postsDTO, nil
+}

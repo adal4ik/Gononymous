@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"Gononymous/internal/core/domains/dto"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+
+	"Gononymous/internal/core/domains/dto"
 
 	driverports "Gononymous/internal/core/ports/driver_ports"
 )
