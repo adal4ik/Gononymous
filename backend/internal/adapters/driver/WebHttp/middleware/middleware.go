@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -11,14 +10,12 @@ import (
 func SessionHandler(next http.Handler, sessionService driverports.SessionServiceDriverInterface) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := r.Cookie("session_id")
-		fmt.Println("middle ware")
 		if err != nil && err != http.ErrNoCookie {
 			http.Error(w, "error reading cookie", http.StatusBadRequest)
 			return
 		}
 
 		if err == http.ErrNoCookie {
-			fmt.Println("createing")
 
 			id, err := sessionService.CreateSession(r.Context())
 			if err != nil {

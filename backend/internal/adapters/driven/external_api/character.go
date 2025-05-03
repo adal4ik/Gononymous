@@ -10,12 +10,10 @@ import (
 	"backend/internal/core/domains/dto"
 )
 
-// CharacterClient — внешний клиент для Rick and Morty API
 type CharacterClient struct {
 	httpClient *http.Client
 }
 
-// NewCharacterClient возвращает новый клиент с отключенной TLS-проверкой (для тестов / dev)
 func NewCharacterClient() *CharacterClient {
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -25,10 +23,7 @@ func NewCharacterClient() *CharacterClient {
 	return &CharacterClient{httpClient: client}
 }
 
-// GetCharacter получает персонажа по ID через публичный API
 func (c *CharacterClient) GetCharacter(ctx context.Context, id int) (*dto.Character, error) {
-	fmt.Println("get character")
-
 	url := fmt.Sprintf("https://rickandmortyapi.com/api/character/%d", id)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)

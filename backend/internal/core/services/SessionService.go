@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	rnd "math/rand"
 	"sync"
 
@@ -14,28 +13,28 @@ import (
 type SessionService struct {
 	SessionRepo drivenports.SessionRepoInterface
 	Character   drivenports.CharacterRepoInterface
-	Picker      Picker
+	Picker      AvatarPicker
 }
 
-type Picker struct {
+type AvatarPicker struct {
 	mu    sync.Mutex
 	arr   []int
 	right int
 }
 
-func NewPicker() *Picker {
+func NewPicker() *AvatarPicker {
 	arr := make([]int, 0, 826)
 	for i := 1; i <= 826; i++ {
 		arr = append(arr, i)
 	}
-	return &Picker{mu: sync.Mutex{}, arr: arr, right: len(arr) - 1}
+	return &AvatarPicker{mu: sync.Mutex{}, arr: arr, right: len(arr) - 1}
 }
 
 func NewSessionService(SessionRepo drivenports.SessionRepoInterface, Character drivenports.CharacterRepoInterface) *SessionService {
 	return &SessionService{SessionRepo: SessionRepo, Character: Character, Picker: *NewPicker()}
 }
 
-func (p *Picker) Pick() int {
+func (p *AvatarPicker) Pick() int {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	if p.right < 0 {
@@ -50,8 +49,6 @@ func (p *Picker) Pick() int {
 }
 
 func (s *SessionService) CreateSession(ctx context.Context) (string, error) {
-	fmt.Println("create session")
-
 	ch, err := s.Character.GetCharacter(ctx, s.Picker.Pick())
 	if err != nil {
 		return "", err
