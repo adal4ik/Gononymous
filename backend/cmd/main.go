@@ -9,13 +9,11 @@ import (
 	"sync"
 	"time"
 
+	db "backend/internal/adapters/driven/database"
 	"backend/internal/adapters/driver/WebHttp"
+	handlers "backend/internal/adapters/driver/WebHttp/Handlers"
 	"backend/internal/core/services"
 	"backend/utils"
-
-	db "backend/internal/adapters/driven/database"
-
-	handlers "backend/internal/adapters/driver/WebHttp/Handlers"
 )
 
 var port = ":8080"
