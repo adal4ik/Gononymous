@@ -8,7 +8,7 @@ import (
 )
 
 func TestS3SavingImages(t *testing.T) {
-	data, err := os.ReadFile("MainBefore.jpg")
+	data, err := os.ReadFile("ERD.png")
 	if err != nil {
 		t.Fatal("Failed to read test image:", err)
 	}
