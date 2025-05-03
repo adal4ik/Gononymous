@@ -12,11 +12,10 @@ import (
 	db "backend/internal/adapters/driven/database"
 	"backend/internal/adapters/driver/WebHttp"
 	handlers "backend/internal/adapters/driver/WebHttp/Handlers"
+	"backend/internal/adapters/driver/cli"
 	"backend/internal/core/services"
 	"backend/utils"
 )
-
-var port = ":8080"
 
 func main() {
 	ctx := context.Background()
@@ -33,12 +32,12 @@ func main() {
 	mux := WebHttp.Router(handlers, services.SessionService)
 
 	httpServer := &http.Server{
-		Addr:    port,
+		Addr:    cli.Port,
 		Handler: mux,
 	}
 
 	go func() {
-		fmt.Println("Server is running on port: http//localhost" + port)
+		fmt.Println("Server is running on port: http//localhost" + cli.Port)
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			fmt.Fprintf(os.Stderr, "error listening and serving: %s\n", err)
 		}

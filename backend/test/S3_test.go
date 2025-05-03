@@ -1,8 +1,10 @@
-package s3
+package test
 
 import (
 	"os"
 	"testing"
+
+	"backend/internal/adapters/driven/s3"
 )
 
 func TestS3SavingImages(t *testing.T) {
@@ -10,7 +12,7 @@ func TestS3SavingImages(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to read test image:", err)
 	}
-	newS3 := NewS3ImageCollector()
+	newS3 := s3.NewS3ImageCollector()
 	if err != nil {
 		t.Fatal("SaveImage failed:", err)
 	}
