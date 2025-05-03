@@ -1,11 +1,13 @@
-package services
+package test
 
 import (
 	"testing"
+
+	"backend/internal/core/services"
 )
 
 func TestPicker_Pick(t *testing.T) {
-	p := NewPicker()
+	p := services.NewPicker()
 	hm := make(map[int]bool)
 
 	for i := 1; i <= 827; i++ {

@@ -9,7 +9,7 @@ CREATE TABLE users(
 
 CREATE TABLE posts(
     post_id UUID PRIMARY KEY,
-    /*user_id UUID  REFERENCES users(user_id),*/
+    user_id UUID  REFERENCES users(user_id),
     created_at TIMESTAMP NOT NULL  DEFAULT NOW(),
     title VARCHAR(50) NOT NULL,
     subject VARCHAR(50),

@@ -19,6 +19,7 @@ func NewBaseHandler(logger slog.Logger) *BaseHandler {
 type Handler struct {
 	PostHandler    *PostsHandler
 	CatalogHandler *CatalogHandler
+	CommentHandler *CommentHandler
 }
 
 func (b *BaseHandler) handleError(w http.ResponseWriter, r *http.Request, code int, message string, err error) {
@@ -40,5 +41,6 @@ func New(service *services.Service, baseHandler BaseHandler) *Handler {
 	return &Handler{
 		PostHandler:    NewPostHandler(service.PostsService, baseHandler),
 		CatalogHandler: NewCatalogHandler(service.PostsService),
+		// CommentHandler: NewCommentHandler(service.),
 	}
 }

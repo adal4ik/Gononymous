@@ -1,8 +1,6 @@
 package services
 
 import (
-	"time"
-
 	"backend/internal/core/domains/dao"
 	"backend/internal/core/domains/dto"
 	"backend/utils"
@@ -22,7 +20,7 @@ func NewPostService(repo drivenports.DatabasePortInterface, imageCollector drive
 func (postService *PostService) AddPost(post dto.PostDto, data []byte) error {
 	var err error
 	postDao := dao.ParseDTOtoDAO(post)
-	postDao.CreatedAt = time.Now()
+	postDao.UserId = post.AuthorID
 	postDao.PostId = utils.UUID()
 	postDao.Status = "Active"
 	postDao.ImageUrl, err = postService.imageCollector.SaveImage(data)
@@ -47,4 +45,18 @@ func (postService *PostService) GetAll() ([]dto.PostDto, error) {
 		postsDTO = append(postsDTO, dto.PostDto{ID: posts[i].PostId, Title: posts[i].Title, Subject: posts[i].Subject, Content: posts[i].Content, Image: posts[i].ImageUrl})
 	}
 	return postsDTO, nil
+}
+
+func (postService *PostService) GetPostById(id string) (dto.PostDto, error) {
+	postDao, err := postService.repo.GetPostById(id)
+	if err != nil {
+		return dto.PostDto{}, err
+	}
+	var postDto dto.PostDto
+	postDto.ID = postDao.PostId
+	postDto.Image = postDao.ImageUrl
+	postDto.Content = postDao.Content
+	postDto.Subject = postDao.Subject
+	postDto.Title = postDao.Title
+	return postDto, nil
 }

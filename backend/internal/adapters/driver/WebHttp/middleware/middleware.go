@@ -5,27 +5,35 @@ import (
 	"net/http"
 	"time"
 
-	"backend/utils"
+	driverports "backend/internal/core/ports/driver_ports"
 )
 
-func SessionHandler(next http.Handler) http.Handler {
+func SessionHandler(next http.Handler, sessionService driverports.SessionServiceDriverInterface) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("session_id")
+		_, err := r.Cookie("session_id")
+		fmt.Println("middle ware")
+		if err != nil && err != http.ErrNoCookie {
+			http.Error(w, "error reading cookie", http.StatusBadRequest)
+			return
+		}
+
 		if err == http.ErrNoCookie {
-			sessionID := utils.UUID()
-			newCookie := &http.Cookie{
+			fmt.Println("createing")
+
+			id, err := sessionService.CreateSession(r.Context())
+			if err != nil {
+				http.Error(w, "failed to create session", http.StatusInternalServerError)
+				return
+			}
+
+			http.SetCookie(w, &http.Cookie{
 				Name:     "session_id",
-				Value:    sessionID,
+				Value:    id,
 				Path:     "/",
 				Expires:  time.Now().Add(24 * time.Hour),
 				HttpOnly: true,
-			}
-			http.SetCookie(w, newCookie)
-			fmt.Println(newCookie)
-
-			return
+			})
 		}
-		fmt.Println(cookie)
 
 		next.ServeHTTP(w, r)
 	})

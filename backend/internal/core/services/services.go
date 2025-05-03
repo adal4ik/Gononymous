@@ -7,11 +7,13 @@ import (
 )
 
 type Service struct {
-	PostsService driverports.PostDriverPortInterface
+	PostsService   driverports.PostDriverPortInterface
+	SessionService driverports.SessionServiceDriverInterface
 }
 
 func New(repo *db.Repository) *Service {
 	return &Service{
-		PostsService: NewPostService(repo.PostRepo, s3.NewS3ImageCollector()),
+		PostsService:   NewPostService(repo.PostRepo, s3.NewS3ImageCollector()),
+		SessionService: NewSessionService(repo.SessionRepo, repo.CharacterRepo),
 	}
 }

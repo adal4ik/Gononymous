@@ -142,4 +142,28 @@
 </main>
 
 </body>
+<script>
+    document.querySelector('form').addEventListener('submit', async function(e) {
+        e.preventDefault(); // Prevent the default form submission
+        
+        const formData = new FormData(this);
+        
+        try {
+            const response = await fetch('/submit-post', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                alert('Post submitted successfully!');
+                this.reset(); // Optional: clear the form
+            } else {
+                throw new Error('Submission failed');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('There was an error submitting your post.');
+        }
+    });
+    </script>
 </html>

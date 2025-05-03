@@ -1,13 +1,15 @@
-package externalapi
+package test
 
 import (
 	"context"
 	"testing"
+
+	externalapi "backend/internal/adapters/driven/external_api"
 )
 
-func TestRickAndMortySerivice_GetCharacter(t *testing.T) {
+func TestCharacterSerivice_GetCharacter(t *testing.T) {
 	ctx := context.Background()
-	r := NewRickAndMortySerivice()
+	r := externalapi.NewCharacterClient()
 
 	ch, err := r.GetCharacter(ctx, 1)
 	if err != nil {
