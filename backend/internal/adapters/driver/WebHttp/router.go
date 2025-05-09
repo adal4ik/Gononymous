@@ -4,8 +4,6 @@ import (
 	"backend/internal/adapters/driver/WebHttp/middleware"
 	"net/http"
 
-	driverports "backend/internal/core/ports/driver_ports"
-
 	handlers "backend/internal/adapters/driver/WebHttp/Handlers"
 
 	driverports "backend/internal/core/ports/driver_ports"
