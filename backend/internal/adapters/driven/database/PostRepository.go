@@ -27,7 +27,10 @@ func (postRepository *PostRepository) AddPost(post dao.PostDao) error {
 }
 
 func (postRepository *PostRepository) GetActive() ([]dao.PostDao, error) {
-	sqlQuery := `SELECT post_id, created_at, title, subject, content,image_url FROM posts WHERE status = 'Active';`
+	sqlQuery := `SELECT p.post_id, p.created_at, u.name, u.avatar_url, p.title, p.subject, p.content, p.image_url 
+				FROM posts as p
+				JOIN users as u on u.user_id = p.user_id
+				WHERE p.status = 'Active';`
 	rows, err := postRepository.db.Query(sqlQuery)
 	if err != nil {
 		return nil, err
@@ -40,7 +43,7 @@ func (postRepository *PostRepository) GetActive() ([]dao.PostDao, error) {
 	for rows.Next() {
 		var post dao.PostDao
 
-		err = rows.Scan(&post.PostId, &post.CreatedAt, &post.Title, &post.Subject, &post.Content, &post.ImageUrl)
+		err = rows.Scan(&post.PostId, &post.CreatedAt, &post.UserName, &post.UserAvaUrl, &post.Title, &post.Subject, &post.Content, &post.ImageUrl)
 		if err != nil {
 			return nil, err
 		}
@@ -50,7 +53,9 @@ func (postRepository *PostRepository) GetActive() ([]dao.PostDao, error) {
 }
 
 func (postRepository *PostRepository) GetAll() ([]dao.PostDao, error) {
-	sqlQuery := `SELECT post_id, created_at, title, subject, content,image_url FROM posts;`
+	sqlQuery := `SELECT p.post_id, p.created_at, u.name, u.avatar_url, p.title, p.subject, p.content, p.image_url 
+				FROM posts as p
+				JOIN users as u on u.user_id = p.user_id;`
 	rows, err := postRepository.db.Query(sqlQuery)
 	if err != nil {
 		return nil, err
@@ -63,7 +68,7 @@ func (postRepository *PostRepository) GetAll() ([]dao.PostDao, error) {
 	for rows.Next() {
 		var post dao.PostDao
 
-		err = rows.Scan(&post.PostId, &post.CreatedAt, &post.Title, &post.Subject, &post.Content, &post.ImageUrl)
+		err = rows.Scan(&post.PostId, &post.CreatedAt, &post.UserName, &post.UserAvaUrl, &post.Title, &post.Subject, &post.Content, &post.ImageUrl)
 		if err != nil {
 			return nil, err
 		}
@@ -107,4 +112,31 @@ func (r *PostRepository) ArchiveExpiredPosts(ctx context.Context) error {
 		return err
 	}
 	return nil
+}
+
+func (r *PostRepository) GetPostsByUserID(userId string) ([]dao.PostDao, error) {
+	sqlQuery := `SELECT p.post_id, p.created_at, u.name, u.avatar_url, p.title, p.subject, p.content, p.image_url 
+				FROM posts as p
+				JOIN users as u on u.user_id = p.user_id
+				WHERE p.user_id = $1
+				LIMIT 3;`
+	rows, err := r.db.Query(sqlQuery, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var allPosts []dao.PostDao
+
+	for rows.Next() {
+		var post dao.PostDao
+
+		err = rows.Scan(&post.PostId, &post.CreatedAt, &post.UserName, &post.UserAvaUrl, &post.Title, &post.Subject, &post.Content, &post.ImageUrl)
+		if err != nil {
+			return nil, err
+		}
+		allPosts = append(allPosts, post)
+	}
+	return allPosts, nil
 }

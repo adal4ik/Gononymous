@@ -5,10 +5,7 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	"triple-s/internal/errs"
 	"triple-s/internal/structures"
-	"triple-s/internal/utils"
 )
 
 // Method for "PUT" request
@@ -17,12 +14,12 @@ func PutHandler(w http.ResponseWriter, req *http.Request) {
 	dirName := req.PathValue("BucketName")
 
 	// Checking for valide naming
-	passed := utils.ValidateDirName(dirName)
-	if !passed {
-		err := errs.Error{Code: 400, Message: "Bad Request for invalid names:" + dirName, Resource: req.URL.Path}
-		err.WriteError(w)
-		return
-	}
+	// passed := utils.ValidateDirName(dirName)
+	// if !passed {
+	// 	err := errs.Error{Code: 400, Message: "Bad Request for invalid names:" + dirName, Resource: req.URL.Path}
+	// 	err.WriteError(w)
+	// 	return
+	// }
 
 	// Cheking for duplicate names (existense of the bucket)
 	// if _, err := os.Stat(StorageName + "/buckets.csv"); err == nil {

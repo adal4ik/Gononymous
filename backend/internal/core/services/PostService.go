@@ -45,7 +45,7 @@ func (postService *PostService) GetActive() ([]dto.PostDto, error) {
 	var postsDTO []dto.PostDto
 
 	for i := 0; i < len(posts); i++ {
-		postsDTO = append(postsDTO, dto.PostDto{ID: posts[i].PostId, Title: posts[i].Title, Subject: posts[i].Subject, Content: posts[i].Content, Image: posts[i].ImageUrl})
+		postsDTO = append(postsDTO, dto.PostDto{ID: posts[i].PostId, Title: posts[i].Title, AuthorName: posts[i].UserName, AuthorAvaUrl: posts[i].UserAvaUrl, Subject: posts[i].Subject, Content: posts[i].Content, Image: posts[i].ImageUrl})
 	}
 	return postsDTO, nil
 }
@@ -58,7 +58,7 @@ func (postService *PostService) GetAll() ([]dto.PostDto, error) {
 	var postsDTO []dto.PostDto
 
 	for i := 0; i < len(posts); i++ {
-		postsDTO = append(postsDTO, dto.PostDto{ID: posts[i].PostId, Title: posts[i].Title, Subject: posts[i].Subject, Content: posts[i].Content, Image: posts[i].ImageUrl})
+		postsDTO = append(postsDTO, dto.PostDto{ID: posts[i].PostId, Title: posts[i].Title, AuthorName: posts[i].UserName, AuthorAvaUrl: posts[i].UserAvaUrl, Subject: posts[i].Subject, Content: posts[i].Content, Image: posts[i].ImageUrl})
 	}
 	return postsDTO, nil
 }
@@ -77,6 +77,19 @@ func (postService *PostService) GetPostById(id string) (dto.PostDto, error) {
 	postDto.Title = postDao.Title
 	postDto.CreatedAt = postDao.CreatedAt
 	return postDto, nil
+}
+
+func (postService *PostService) GetPostsByUserID(userId string) ([]dto.PostDto, error) {
+	posts, err := postService.repo.GetPostsByUserID(userId)
+	if err != nil {
+		return nil, err
+	}
+	var postsDTO []dto.PostDto
+
+	for i := 0; i < len(posts); i++ {
+		postsDTO = append(postsDTO, dto.PostDto{ID: posts[i].PostId, Title: posts[i].Title, AuthorName: posts[i].UserName, AuthorAvaUrl: posts[i].UserAvaUrl, Subject: posts[i].Subject, Content: posts[i].Content, Image: posts[i].ImageUrl})
+	}
+	return postsDTO, nil
 }
 
 func (s *PostService) StartPostArchiver(ctx context.Context, interval time.Duration) {

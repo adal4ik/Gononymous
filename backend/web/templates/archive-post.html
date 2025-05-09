@@ -173,6 +173,7 @@
     </div>
 
     <!-- Comments -->
+    {{if .PostPage.Comments}}
     <h2>Comments</h2>
     <ul class="comment-list">
         {{range .PostPage.Comments}}
@@ -221,6 +222,7 @@
         </li>
         {{end}}
     </ul>
+    {{end}}
 
 </main>
 

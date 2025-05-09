@@ -11,4 +11,5 @@ type DatabasePortInterface interface {
 	GetAll() ([]dao.PostDao, error)
 	GetPostById(id string) (dao.PostDao, error)
 	ArchiveExpiredPosts(ctx context.Context) error
+	GetPostsByUserID(userId string) ([]dao.PostDao, error)
 }

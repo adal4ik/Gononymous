@@ -3,11 +3,11 @@ package handlers
 import (
 	"backend/internal/core/domains/dao"
 	"backend/internal/core/domains/dto"
-	"fmt"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
+	"strings"
 
 	driverports "backend/internal/core/ports/driver_ports"
 )
@@ -41,31 +41,49 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	var err error
 	var img []byte
 	var post dto.PostDto
-	post.Title = r.Form["name"][0]
-	post.Subject = r.Form["subject"][0]
-	post.Content = r.Form["comment"][0]
-	if len(r.FormValue("file")) != 0 {
-		in, _, err := r.FormFile("file")
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-		defer in.Close()
-		img, err = io.ReadAll(in)
-	}
-	if err != nil {
-		fmt.Println(err.Error())
+
+	post.Title = strings.TrimSpace(r.FormValue("name"))
+	if post.Title == "" {
+		http.Error(w, "Title cannot be empty", http.StatusBadRequest)
 		return
 	}
+
+	post.Subject = strings.TrimSpace(r.FormValue("subject"))
+	post.Content = strings.TrimSpace(r.FormValue("comment"))
+
+	file, header, err := r.FormFile("file")
+	if err == nil {
+		defer file.Close()
+		if header.Size > 10<<20 {
+			http.Error(w, "File too large (max 10MB)", http.StatusBadRequest)
+			return
+		}
+
+		img, err = io.ReadAll(file)
+		if err != nil {
+			http.Error(w, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+	} else if err != http.ErrMissingFile {
+		http.Error(w, "Error processing file upload", http.StatusBadRequest)
+		return
+	}
+
 	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Error(w, "Session cookie missing", http.StatusUnauthorized)
+		return
+	}
 	post.AuthorID = cookie.Value
 
 	err = postHandler.service.AddPost(post, img)
 	if err != nil {
-		fmt.Println(err.Error())
+		http.Error(w, "Error saving post", http.StatusInternalServerError)
+		return
 	}
 }
 

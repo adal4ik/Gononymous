@@ -12,4 +12,5 @@ type PostDriverPortInterface interface {
 	GetAll() ([]dto.PostDto, error)
 	GetPostById(id string) (dto.PostDto, error)
 	StartPostArchiver(ctx context.Context, interval time.Duration)
+	GetPostsByUserID(userId string) ([]dto.PostDto, error)
 }

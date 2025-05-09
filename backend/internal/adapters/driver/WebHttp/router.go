@@ -29,5 +29,9 @@ func Router(handlers *handlers.Handler, sessionservice driverports.SessionServic
 	// ARHIEVE RELATED STAFF
 	mux.HandleFunc("/archive", handlers.ArchiveHandler.GetArchivePage)
 	mux.HandleFunc("/archive-post/{id}", handlers.ArchiveHandler.GetArchivePost)
+
+	// PROFILE RELATED STAFF
+	mux.HandleFunc("/profile", handlers.UserHandler.ProfilePage)
+	mux.HandleFunc("/profile/update-name", handlers.UserHandler.ChangeName)
 	return handler
 }

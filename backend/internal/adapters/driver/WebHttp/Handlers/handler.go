@@ -43,7 +43,7 @@ func New(service *services.Service, baseHandler BaseHandler) *Handler {
 		PostHandler:    NewPostHandler(service.PostsService, service.CommentService, service.SessionService, baseHandler),
 		CatalogHandler: NewCatalogHandler(service.PostsService),
 		CommentHandler: NewCommentHandler(service.CommentService, baseHandler),
-		UserHandler:    NewUserHandler(service.UserService, baseHandler),
+		UserHandler:    NewUserHandler(service.UserService, baseHandler, service.SessionService, service.PostsService),
 		ArchiveHandler: NewArchiveHandler(service.PostsService, baseHandler, service.CommentService, service.SessionService),
 	}
 }

@@ -1,20 +1,21 @@
 package dao
 
 import (
-	"time"
-
 	"backend/internal/core/domains/dto"
+	"time"
 )
 
 type PostDao struct {
-	PostId    string
-	UserId    string
-	CreatedAt time.Time
-	Title     string
-	Subject   string
-	Content   string
-	ImageUrl  string
-	Status    string
+	PostId     string
+	UserId     string
+	UserName   string
+	UserAvaUrl string
+	CreatedAt  time.Time
+	Title      string
+	Subject    string
+	Content    string
+	ImageUrl   string
+	Status     string
 }
 
 func ParseDTOtoDAO(post dto.PostDto) PostDao {
