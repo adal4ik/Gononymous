@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"backend/internal/core/domains/dto"
-	driverports "backend/internal/core/ports/driver_ports"
-	"fmt"
 	"io"
 	"net/http"
+
+	"backend/internal/core/domains/dto"
+	driverports "backend/internal/core/ports/driver_ports"
 )
 
 type CommentHandler struct {
@@ -21,7 +21,8 @@ func (commentHandler *CommentHandler) SubmitComment(w http.ResponseWriter, r *ht
 	var size int64
 	size = r.ContentLength
 	if err := r.ParseMultipartForm(size); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		commentHandler.handleError(w, r, 500, "asd", err)
+		commentHandler.RenderError(w, 500, "asd")
 		return
 	}
 	var comment dto.Comment
@@ -34,7 +35,8 @@ func (commentHandler *CommentHandler) SubmitComment(w http.ResponseWriter, r *ht
 	if len(r.FormValue("file")) != 0 {
 		in, _, err := r.FormFile("file")
 		if err != nil {
-			fmt.Println(err.Error())
+			commentHandler.handleError(w, r, 500, "asd", err)
+			commentHandler.RenderError(w, 500, "asd")
 			return
 		}
 		defer in.Close()
@@ -44,6 +46,8 @@ func (commentHandler *CommentHandler) SubmitComment(w http.ResponseWriter, r *ht
 	comment.UserID = cookie.Value
 	err = commentHandler.service.AddComment(comment, img)
 	if err != nil {
-		fmt.Println(err.Error())
+		commentHandler.handleError(w, r, 500, "asd", err)
+		commentHandler.RenderError(w, 500, "asd")
+		return
 	}
 }

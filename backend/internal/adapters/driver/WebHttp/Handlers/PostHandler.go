@@ -1,14 +1,12 @@
 package handlers
 
 import (
-	"backend/internal/core/domains/dao"
-	"backend/internal/core/domains/dto"
-	"fmt"
 	"html/template"
 	"io"
-	"log"
 	"net/http"
 
+	"backend/internal/core/domains/dao"
+	"backend/internal/core/domains/dto"
 	driverports "backend/internal/core/ports/driver_ports"
 )
 
@@ -38,7 +36,8 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 	var size int64
 	size = r.ContentLength
 	if err := r.ParseMultipartForm(size); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		postHandler.handleError(w, r, 500, "asd", err)
+		postHandler.RenderError(w, 500, "asd")
 		return
 	}
 	var err error
@@ -50,14 +49,16 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 	if len(r.FormValue("file")) != 0 {
 		in, _, err := r.FormFile("file")
 		if err != nil {
-			fmt.Println(err.Error())
+			postHandler.handleError(w, r, 500, "asd", err)
+			postHandler.RenderError(w, 500, "asd")
 			return
 		}
 		defer in.Close()
 		img, err = io.ReadAll(in)
 	}
 	if err != nil {
-		fmt.Println(err.Error())
+		postHandler.handleError(w, r, 500, "asd", err)
+		postHandler.RenderError(w, 500, "asd")
 		return
 	}
 	cookie, err := r.Cookie("session_id")
@@ -65,7 +66,9 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 
 	err = postHandler.service.AddPost(post, img)
 	if err != nil {
-		fmt.Println(err.Error())
+		postHandler.handleError(w, r, 500, "asd", err)
+		postHandler.RenderError(w, 500, "asd")
+		return
 	}
 }
 
@@ -75,17 +78,20 @@ func (postsHandler *PostsHandler) PostPage(w http.ResponseWriter, r *http.Reques
 	var err error
 	page.Post, err = postsHandler.service.GetPostById(postId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		postsHandler.handleError(w, r, 500, "asd", err)
+		postsHandler.RenderError(w, 500, "asd")
 		return
 	}
 	page.User, err = postsHandler.session.GetSessionById(page.Post.AuthorID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		postsHandler.handleError(w, r, 500, "asd", err)
+		postsHandler.RenderError(w, 500, "asd")
 		return
 	}
 	page.Comments, err = postsHandler.comments.GetCommentsByPostId(postId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		postsHandler.handleError(w, r, 500, "asd", err)
+		postsHandler.RenderError(w, 500, "asd")
 		return
 	}
 	tmpl := template.Must(template.ParseFiles("web/templates/post.html"))
@@ -94,7 +100,8 @@ func (postsHandler *PostsHandler) PostPage(w http.ResponseWriter, r *http.Reques
 	}
 	err = tmpl.Execute(w, HTMLXposts)
 	if err != nil {
-		log.Printf("Template execution error: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		postsHandler.handleError(w, r, 500, "asd", err)
+		postsHandler.RenderError(w, 500, "asd")
+		return
 	}
 }

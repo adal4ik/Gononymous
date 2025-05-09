@@ -1,12 +1,11 @@
 package handlers
 
 import (
-	"backend/internal/core/domains/dto"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 
+	"backend/internal/core/domains/dto"
 	driverports "backend/internal/core/ports/driver_ports"
 )
 
@@ -29,7 +28,8 @@ func NewArchiveHandler(service driverports.PostDriverPortInterface, baseHandler 
 func (h *ArchiveHandler) GetArchivePage(w http.ResponseWriter, r *http.Request) {
 	posts, err := h.service.GetAll()
 	if err != nil {
-		h.handleError(w, r, http.StatusInternalServerError, "Failed to get posts", err)
+		h.handleError(w, r, 500, "Failed to get posts", err)
+		h.RenderError(w, 500, "Failed to get posts")
 		return
 	}
 	tmpl := template.Must(template.ParseFiles("web/templates/archive.html"))
@@ -38,13 +38,15 @@ func (h *ArchiveHandler) GetArchivePage(w http.ResponseWriter, r *http.Request) 
 	}
 	err = tmpl.Execute(w, HTMLXposts)
 	if err != nil {
-		log.Printf("Template execution error: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		h.handleError(w, r, 500, "Failed to Execute", err)
+		h.RenderError(w, 500, "Failes to Execute")
+		return
 	}
 
 	w.Header().Set("Content-Type", "text/html")
 	if err != nil {
-		h.handleError(w, r, http.StatusInternalServerError, "Failed to write response", err)
+		h.handleError(w, r, 500, "Failed to write response", err)
+		h.RenderError(w, 500, "Failed to write response")
 		return
 	}
 	h.logger.Info("Archive page rendered successfully", "url", r.URL.Path)
@@ -56,17 +58,20 @@ func (h *ArchiveHandler) GetArchivePost(w http.ResponseWriter, r *http.Request) 
 	var err error
 	page.Post, err = h.service.GetPostById(postId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.handleError(w, r, 500, "Failed to get post", err)
+		h.RenderError(w, 500, "Failed to get post")
 		return
 	}
 	page.User, err = h.session.GetSessionById(page.Post.AuthorID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.handleError(w, r, 500, "Failed to get user", err)
+		h.RenderError(w, 500, "Failde to get user")
 		return
 	}
 	page.Comments, err = h.comment.GetCommentsByPostId(postId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.handleError(w, r, 500, "Failed to get comment", err)
+		h.RenderError(w, 500, "Failed to get comment")
 		return
 	}
 	tmpl := template.Must(template.ParseFiles("web/templates/archive-post.html"))
@@ -76,7 +81,7 @@ func (h *ArchiveHandler) GetArchivePost(w http.ResponseWriter, r *http.Request) 
 	fmt.Println(HTMLXposts)
 	err = tmpl.Execute(w, HTMLXposts)
 	if err != nil {
-		log.Printf("Template execution error: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		h.handleError(w, r, 500, "Failed to get comment", err)
+		h.RenderError(w, 500, "Failed to get comment")
 	}
 }
