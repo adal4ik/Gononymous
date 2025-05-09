@@ -1,7 +1,7 @@
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TYPE post_status AS ENUM ('active', 'archived', 'deleted');
+CREATE TYPE post_status AS ENUM ('Active', 'Archived');
 
 CREATE TABLE users (
     user_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

@@ -1,51 +1,123 @@
-<!-- templates/archive-post.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>{{.Post.Title}} (Archived)</title>
     <style>
-        .comment {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px 0;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 0;
+            color: #333;
         }
+
+        header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .post-image {
+            max-width: 100%;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #eee;
+        }
+
+        .comment {
+            border: 1px solid #e1e4e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            background-color: #fafafa;
+        }
+
         .comment img.avatar {
             width: 50px;
-            vertical-align: middle;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            margin-right: 15px;
         }
+
         .comment-content {
-            display: inline-block;
-            vertical-align: middle;
-            margin-left: 10px;
+            flex: 1;
+        }
+
+        .comment-content p {
+            margin: 5px 0;
+        }
+
+        .comment-content em {
+            color: #999;
+        }
+
+        .no-comments {
+            color: #777;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
-    <p>Hello</p>
-<a href="/archive">Back to Archive</a>
-<h1>{{.Post.Title}} (Archived)</h1>
-<p>{{.Post.Content}}</p>
-{{if .Post.ImageURL}}
-<img src="{{.Post.ImageURL}}" alt="Post Image">
-{{end}}
-<p>Post ID: {{.Post.ID}}</p>
-<h2>Comments</h2>
-<div class="comments">
-    {{range .Comments}}
-    <div class="comment">
-        <img class="avatar" src="{{.AvatarURL}}" alt="User Avatar">
-        <div class="comment-content">
-            <p><strong>Comment ID:</strong> {{.ID}}</p>
-            {{if .ReplyToID}}
-            <p><em>Reply to ID: {{.ReplyToID}}</em></p>
-            {{end}}
-            <p>{{.Content}}</p>
-        </div>
-    </div>
-    {{else}}
-    <p>No comments available.</p>
+
+<header>
+    <a href="/archive" class="back-link">← Back to Archive</a>
+    <h1>{{.Post.Title}} (Archived)</h1>
+</header>
+
+<main>
+    <p>{{.Post.Content}}</p>
+
+    {{if .Post.ImageURL}}
+    <img src="{{.Post.ImageURL}}" alt="Post Image" class="post-image">
     {{end}}
-</div>
-<!-- Comment form is omitted since adding new comments is not allowed -->
+
+    <p><strong>Post ID:</strong> {{.Post.ID}}</p>
+
+    <h2>Comments</h2>
+    <div class="comments">
+        {{range .Comments}}
+        <div class="comment">
+            <img class="avatar" src="{{.AvatarURL}}" alt="User Avatar">
+            <div class="comment-content">
+                <p><strong>Comment ID:</strong> {{.ID}}</p>
+                {{if .ReplyToID}}
+                <p><em>Reply to ID: {{.ReplyToID}}</em></p>
+                {{end}}
+                <p>{{.Content}}</p>
+            </div>
+        </div>
+        {{else}}
+        <p class="no-comments">No comments available.</p>
+        {{end}}
+    </div>
+</main>
+
 </body>
 </html>

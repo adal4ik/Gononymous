@@ -21,6 +21,7 @@ type Handler struct {
 	CatalogHandler *CatalogHandler
 	CommentHandler *CommentHandler
 	UserHandler    *UserHandler
+	ArchiveHandler *ArchiveHandler
 }
 
 func (b *BaseHandler) handleError(w http.ResponseWriter, r *http.Request, code int, message string, err error) {

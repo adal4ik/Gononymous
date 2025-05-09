@@ -3,11 +3,9 @@ package WebHttp
 import (
 	"net/http"
 
-	driverports "backend/internal/core/ports/driver_ports"
-
-	"backend/internal/adapters/driver/WebHttp/middleware"
-
 	handlers "backend/internal/adapters/driver/WebHttp/Handlers"
+	"backend/internal/adapters/driver/WebHttp/middleware"
+	driverports "backend/internal/core/ports/driver_ports"
 )
 
 func Router(handlers *handlers.Handler, sessionservice driverports.SessionServiceDriverInterface) http.Handler {
@@ -24,6 +22,6 @@ func Router(handlers *handlers.Handler, sessionservice driverports.SessionServic
 	var handler http.Handler = mux
 	handler = middleware.SessionHandler(mux, sessionservice)
 	// ARHIEVE RELATED STAFF
-	// mux.HandleFunc("/archive", handlers.ArchiveHandler)
+	mux.HandleFunc("/archive", handlers.ArchiveHandler.GetArchivePage)
 	return handler
 }
