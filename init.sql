@@ -18,7 +18,7 @@ CREATE TABLE posts (
     subject VARCHAR(50),
     content TEXT,
     image_url TEXT,
-    status post_status NOT NULL DEFAULT 'active'
+    status post_status NOT NULL DEFAULT 'Active'
 );
 
 CREATE TABLE comments (
