@@ -51,6 +51,30 @@
     </style>
 </head>
 <body>
+    <div style="position: absolute; top: 20px; right: 30px;">
+            <div style="position: relative; display: inline-block;">
+                <img src="{{.User.AvatarURL}}" alt="Avatar" style="width:40px; height:40px; border-radius:50%; cursor:pointer;" onclick="toggleDropdown()">
+                <div id="profileDropdown" style="display:none; position:absolute; right:0; background:#fff; border:1px solid #ddd; box-shadow:0 2px 6px rgba(0,0,0,0.1); border-radius:8px; margin-top:8px; min-width:120px;">
+                    <a href="/profile" style="display:block; padding:10px; text-decoration:none; color:#333;">Change name</a>
+                </div>
+            </div>
+        </div>
+    
+        <script>
+            function toggleDropdown() {
+                const dropdown = document.getElementById("profileDropdown");
+                dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+            }
+    
+            window.addEventListener("click", function(event) {
+                if (!event.target.matches('img')) {
+                    const dropdown = document.getElementById("profileDropdown");
+                    if (dropdown && dropdown.style.display === "block") {
+                        dropdown.style.display = "none";
+                    }
+                }
+            });
+        </script>
 <div class="error-container">
     <h1>Error {{.Code}} – {{.Message}}</h1>
     <p>Sorry, something went wrong. Please try again.</p>
