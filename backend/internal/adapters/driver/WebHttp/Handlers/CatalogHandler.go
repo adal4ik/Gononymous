@@ -1,12 +1,11 @@
 package handlers
 
 import (
+	"backend/internal/core/domains/dto"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
-
-	"backend/internal/core/domains/dto"
 
 	driverports "backend/internal/core/ports/driver_ports"
 )
@@ -20,7 +19,7 @@ func NewCatalogHandler(service driverports.PostDriverPortInterface) *CatalogHand
 }
 
 func (c *CatalogHandler) MainPage(w http.ResponseWriter, r *http.Request) {
-	posts, err := c.service.GetAll()
+	posts, err := c.service.GetActive()
 	if err != nil {
 		fmt.Println(err.Error())
 		return

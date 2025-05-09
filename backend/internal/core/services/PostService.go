@@ -1,14 +1,14 @@
 package services
 
 import (
+	"backend/internal/core/domains/dao"
+	"backend/internal/core/domains/dto"
+	"backend/utils"
 	"context"
 	"log"
 	"time"
 
-	"backend/internal/core/domains/dao"
-	"backend/internal/core/domains/dto"
 	drivenports "backend/internal/core/ports/driven_ports"
-	"backend/utils"
 )
 
 type PostService struct {
@@ -35,6 +35,19 @@ func (postService *PostService) AddPost(post dto.PostDto, data []byte) error {
 		return err
 	}
 	return nil
+}
+
+func (postService *PostService) GetActive() ([]dto.PostDto, error) {
+	posts, err := postService.repo.GetActive()
+	if err != nil {
+		return nil, err
+	}
+	var postsDTO []dto.PostDto
+
+	for i := 0; i < len(posts); i++ {
+		postsDTO = append(postsDTO, dto.PostDto{ID: posts[i].PostId, Title: posts[i].Title, Subject: posts[i].Subject, Content: posts[i].Content, Image: posts[i].ImageUrl})
+	}
+	return postsDTO, nil
 }
 
 func (postService *PostService) GetAll() ([]dto.PostDto, error) {

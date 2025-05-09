@@ -28,5 +28,6 @@ func Router(handlers *handlers.Handler, sessionservice driverports.SessionServic
 	handler = middleware.SessionHandler(mux, sessionservice)
 	// ARHIEVE RELATED STAFF
 	mux.HandleFunc("/archive", handlers.ArchiveHandler.GetArchivePage)
+	mux.HandleFunc("/archive-post/{id}", handlers.ArchiveHandler.GetArchivePost)
 	return handler
 }

@@ -4,6 +4,8 @@ import (
 	"backend/internal/core/domains/dao"
 	"context"
 	"database/sql"
+	"fmt"
+	"log"
 )
 
 type PostRepository struct {
@@ -24,8 +26,31 @@ func (postRepository *PostRepository) AddPost(post dao.PostDao) error {
 	return nil
 }
 
-func (postRepository *PostRepository) GetAll() ([]dao.PostDao, error) {
+func (postRepository *PostRepository) GetActive() ([]dao.PostDao, error) {
 	sqlQuery := `SELECT post_id, created_at, title, subject, content,image_url FROM posts WHERE status = 'Active';`
+	rows, err := postRepository.db.Query(sqlQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var allPosts []dao.PostDao
+
+	for rows.Next() {
+		var post dao.PostDao
+
+		err = rows.Scan(&post.PostId, &post.CreatedAt, &post.Title, &post.Subject, &post.Content, &post.ImageUrl)
+		if err != nil {
+			return nil, err
+		}
+		allPosts = append(allPosts, post)
+	}
+	return allPosts, nil
+}
+
+func (postRepository *PostRepository) GetAll() ([]dao.PostDao, error) {
+	sqlQuery := `SELECT post_id, created_at, title, subject, content,image_url FROM posts;`
 	rows, err := postRepository.db.Query(sqlQuery)
 	if err != nil {
 		return nil, err
@@ -62,22 +87,23 @@ func (postRepository *PostRepository) GetPostById(id string) (dao.PostDao, error
 func (r *PostRepository) ArchiveExpiredPosts(ctx context.Context) error {
 	query := `
 		UPDATE posts
-		SET status = 'archived'
-		WHERE status != 'archived' AND (
+		SET status = 'Archived'
+		WHERE status != 'Archived' AND (
 			(NOT EXISTS (
 				SELECT 1 FROM comments WHERE comments.post_id = posts.post_id
-			) AND created_at <= NOW() - INTERVAL '10 minutes')
+			) AND created_at <= NOW() - INTERVAL '1 minutes')
 
 			OR
 
 			(EXISTS (
 				SELECT 1 FROM comments WHERE comments.post_id = posts.post_id
-			) AND created_at <= NOW() - INTERVAL '15 minutes')
+			) AND created_at <= NOW() - INTERVAL '2 minutes')
 		);
 	`
-
+	log.Print("hi")
 	_, err := r.db.ExecContext(ctx, query)
 	if err != nil {
+		fmt.Print(err)
 		return err
 	}
 	return nil

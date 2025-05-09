@@ -2,103 +2,234 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{.Post.Title}} (Archived)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Page</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            background-color: #f2f4f8;
             color: #333;
         }
 
-        a {
-            text-decoration: none;
-            color: #3498db;
-        }
-
-        h1, h2 {
-            color: #2c3e50;
-        }
-
-        .post {
-            background-color: #ffffff;
+        header {
+            text-align: center;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
         }
 
-        .post img {
-            max-width: 100%;
+        main {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .post, .comment {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .post .header, .comment .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .post .header img,
+        .comment .header img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .post .content,
+        .comment .content {
+            display: flex;
+            gap: 20px;
+        }
+
+        .post .content img,
+        .comment .content img {
+            max-width: 100px;
             border-radius: 8px;
+        }
+
+        .text {
+            flex: 1;
+        }
+
+        .text h3 {
+            margin: 0 0 8px 0;
+        }
+
+        .comment-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .replies {
+            list-style: none;
+            padding-left: 30px;
+            border-left: 2px solid #e1e4e8;
+            margin-top: 15px;
+        }
+
+        .reply-form {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .reply-form.active {
+            display: block;
+        }
+
+        .add-comment, .reply-form {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .add-comment textarea,
+        .reply-form textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+
+        .add-comment input[type="file"],
+        .reply-form input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        .add-comment input[type="submit"],
+        .reply-form input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .add-comment input[type="submit"]:hover,
+        .reply-form input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+
+        .reply-btn {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 14px;
             margin-top: 10px;
         }
 
-        .comments {
-            margin-top: 20px;
-        }
-
-        .comment {
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-left: 5px solid #3498db;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: flex-start;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        }
-
-        .comment img.avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 15px;
-        }
-
-        .comment-content p {
-            margin: 4px 0;
-        }
-
-        .no-comments {
-            color: #888;
-            font-style: italic;
+        .reply-btn:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-<a href="/archive">← Back to Archive</a>
+<header>
+    <h1>{{.Title}}</h1>
+</header>
 
-<div class="post">
-    <h1>{{.Post.Title}} (Archived)</h1>
-    <p>{{.Post.Content}}</p>
-    {{if .Post.ImageURL}}
-    <img src="{{.Post.ImageURL}}" alt="Post Image">
-    {{end}}
-    <p><strong>Post ID:</strong> {{.Post.ID}}</p>
-</div>
+<main>
 
-<h2>Comments</h2>
-<div class="comments">
-    {{range .Comments}}
-    <div class="comment">
-        <img class="avatar" src="{{.AvatarURL}}" alt="User Avatar">
-        <div class="comment-content">
-            <p><strong>Comment ID:</strong> {{.ID}}</p>
-            {{if .ReplyToID}}
-            <p><em>Reply to ID: {{.ReplyToID}}</em></p>
+    <!-- Main Post -->
+    <div class="post">
+        <div class="header">
+            <img src="{{.PostPage.User.AvatarURL}}" alt="avatar">
+            <b>{{.PostPage.User.Name}}</b> • {{.PostPage.Post.CreatedAt}} • ID: {{.PostPage.Post.ID}}
+        </div>
+        <div class="content">
+            {{if .PostPage.Post.Image}}
+            <a href="{{.PostPage.Post.Image}}">
+                <img src="{{.PostPage.Post.Image}}" alt="Post Image">
+            </a>
             {{end}}
-            <p>{{.Content}}</p>
+            <div class="text">
+                <h3>{{.PostPage.Post.Title}}</h3>
+                <p>{{.PostPage.Post.Content}}</p>
+            </div>
         </div>
     </div>
-    {{else}}
-    <p class="no-comments">No comments available.</p>
-    {{end}}
-</div>
+
+    <!-- Comments -->
+    <h2>Comments</h2>
+    <ul class="comment-list">
+        {{range .PostPage.Comments}}
+        <li class="comment" id="comment-{{.CommentID}}">
+            <div class="header">
+                <img src="{{.UserAvatarLink}}" alt="avatar">
+                <b>{{.UserName}}</b> • {{.CreatedAt}} • ID: {{.CommentID}}
+            </div>
+            <div class="content">
+                {{if .ImageUrl}}
+                <a href="{{.ImageURL}}">
+                    <img src="{{.ImageURL}}" alt="Comment Image">
+                </a>
+                {{end}}
+                <div class="text">
+                    <p>{{.Content}}</p>
+                </div>
+            </div>
+            
+            <!-- Reply button -->
+            <button class="reply-btn" onclick="toggleReplyForm('{{.CommentID}}')">Reply</button>
+                
+            <!-- Replies list -->
+            {{if .Replies}}
+            <ul class="replies">
+                {{range .Replies}}
+                <li class="comment">
+                    <div class="header">
+                        <img src="{{.UserAvatarLink}}" alt="avatar">
+                        <b>{{.UserName}}</b> • {{.CreatedAt}} • ID: {{.CommentID}}
+                    </div>
+                    <div class="content">
+                        {{if .ImageUrl}}
+                        <a href="{{.ImageURL}}">
+                            <img src="{{.ImageURL}}" alt="Comment Image">
+                        </a>
+                        {{end}}
+                        <div class="text">
+                            <p>{{.Content}}</p>
+                        </div>
+                    </div>
+                </li>
+                {{end}}
+            </ul>
+            {{end}}
+        </li>
+        {{end}}
+    </ul>
+
+</main>
+
+<script>
+    function toggleReplyForm(commentID) {
+        const form = document.getElementById(`reply-form-${commentID}`);
+        form.classList.toggle('active');
+    }
+</script>
 
 </body>
 </html>

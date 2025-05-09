@@ -2,121 +2,158 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{.Post.Title}} (Archived)</title>
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gononymous – Catalog</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f9fc;
+            background-color: #f2f4f8;
             margin: 0;
-            padding: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             color: #333;
         }
 
-        header {
+        header, footer {
+            text-align: center;
+            padding: 20px 0;
             background-color: #fff;
             border-bottom: 1px solid #ddd;
-            padding: 20px;
-            text-align: center;
         }
 
-        main {
-            max-width: 800px;
-            margin: 30px auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        h1 {
-            margin-top: 0;
+        header h1 {
+            margin: 0;
+            font-size: 28px;
             color: #2c3e50;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            margin: 0 12px;
             text-decoration: none;
             color: #3498db;
-            font-weight: bold;
+            font-weight: 500;
         }
 
-        .post-image {
-            max-width: 100%;
-            margin: 20px 0;
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .posts .list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 100%));
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .post {
+            width: 100%;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
             border-radius: 10px;
-            border: 1px solid #eee;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+            display:grid;
+            grid-template-columns: 200px auto;
         }
 
-        .comment {
-            border: 1px solid #e1e4e8;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: flex-start;
-            background-color: #fafafa;
+        .post:hover {
+            transform: translateY(-4px);
         }
 
-        .comment img.avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 1px solid #ccc;
-            margin-right: 15px;
+        .post img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
         }
 
-        .comment-content {
-            flex: 1;
+        .post h3 {
+            margin: 0;
+            padding: 12px;
+            font-size: 16px;
+            color: #2c3e50;
         }
 
-        .comment-content p {
-            margin: 5px 0;
+        .post a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
-        .comment-content em {
-            color: #999;
-        }
+        @media (max-width: 600px) {
+            .post img {
+                height: 140px;
+            }
 
-        .no-comments {
-            color: #777;
-            font-style: italic;
+            .post h3 {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
-
-<header>
-    <a href="/archive" class="back-link">← Back to Archive</a>
-    <h1>{{.Post.Title}} (Archived)</h1>
-</header>
-
-<main>
-    <p>{{.Post.Content}}</p>
-
-    {{if .Post.ImageURL}}
-    <img src="{{.Post.ImageURL}}" alt="Post Image" class="post-image">
-    {{end}}
-
-    <p><strong>Post ID:</strong> {{.Post.ID}}</p>
-
-    <h2>Comments</h2>
-    <div class="comments">
-        {{range .Comments}}
-        <div class="comment">
-            <img class="avatar" src="{{.AvatarURL}}" alt="User Avatar">
-            <div class="comment-content">
-                <p><strong>Comment ID:</strong> {{.ID}}</p>
-                {{if .ReplyToID}}
-                <p><em>Reply to ID: {{.ReplyToID}}</em></p>
-                {{end}}
-                <p>{{.Content}}</p>
+    <header>
+        <h1>Gononymous – Archive</h1>
+        <nav>
+            [<a href="/create-post">Create Post</a>] |
+            [<a href="/catalog">Catalog</a>]
+        </nav>
+    
+        <div style="position: absolute; top: 20px; right: 30px;">
+            <div style="position: relative; display: inline-block;">
+                <img src="{{.User.AvatarURL}}" alt="Avatar" style="width:40px; height:40px; border-radius:50%; cursor:pointer;" onclick="toggleDropdown()">
+                <div id="profileDropdown" style="display:none; position:absolute; right:0; background:#fff; border:1px solid #ddd; box-shadow:0 2px 6px rgba(0,0,0,0.1); border-radius:8px; margin-top:8px; min-width:120px;">
+                    <a href="/profile" style="display:block; padding:10px; text-decoration:none; color:#333;">Change name</a>
+                </div>
             </div>
         </div>
-        {{else}}
-        <p class="no-comments">No comments available.</p>
-        {{end}}
-    </div>
+    
+        <script>
+            function toggleDropdown() {
+                const dropdown = document.getElementById("profileDropdown");
+                dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+            }
+    
+            window.addEventListener("click", function(event) {
+                if (!event.target.matches('img')) {
+                    const dropdown = document.getElementById("profileDropdown");
+                    if (dropdown && dropdown.style.display === "block") {
+                        dropdown.style.display = "none";
+                    }
+                }
+            });
+        </script>
+    </header>
+    
+
+<main>
+    <section class="posts">
+        <ul class="list">
+            {{range .Posts}}
+            <a href="/archive-post/{{.ID}}" style="text-decoration: none;color: inherit;">
+                <li class="post">
+                    <img src="{{.Image}}" alt="Post Image">
+                    <div style="padding: 10px;">
+                        <h3  style="padding: 0;">{{.Title}}</h3>
+                        <h5>{{.Subject}}</h2>
+                        <p>{{.Content}}</p>    
+                    </div>
+                </li>
+            </a>
+            {{end}}
+        </ul>
+    </section>
 </main>
 
 </body>
