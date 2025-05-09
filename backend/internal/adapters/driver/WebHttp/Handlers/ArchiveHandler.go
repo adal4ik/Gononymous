@@ -26,7 +26,7 @@ func NewArchiveHandler(service driverports.PostDriverPortInterface, baseHandler 
 }
 
 func (h *ArchiveHandler) GetArchivePage(w http.ResponseWriter, r *http.Request) {
-	posts, err := h.service.GetAll()
+	posts, err := h.service.GetAll(r.Context())
 	if err != nil {
 		h.handleError(w, r, 500, "Failed to get posts", err)
 		h.RenderError(w, 500, "Failed to get posts")
@@ -56,19 +56,19 @@ func (h *ArchiveHandler) GetArchivePost(w http.ResponseWriter, r *http.Request) 
 	postId := r.PathValue("id")
 	var page PostPage
 	var err error
-	page.Post, err = h.service.GetPostById(postId)
+	page.Post, err = h.service.GetPostById(postId, r.Context())
 	if err != nil {
 		h.handleError(w, r, 500, "Failed to get post", err)
 		h.RenderError(w, 500, "Failed to get post")
 		return
 	}
-	page.User, err = h.session.GetSessionById(page.Post.AuthorID)
+	page.User, err = h.session.GetSessionById(page.Post.AuthorID, r.Context())
 	if err != nil {
 		h.handleError(w, r, 500, "Failed to get user", err)
 		h.RenderError(w, 500, "Failde to get user")
 		return
 	}
-	page.Comments, err = h.comment.GetCommentsByPostId(postId)
+	page.Comments, err = h.comment.GetCommentsByPostId(postId, r.Context())
 	if err != nil {
 		h.handleError(w, r, 500, "Failed to get comment", err)
 		h.RenderError(w, 500, "Failed to get comment")

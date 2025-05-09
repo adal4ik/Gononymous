@@ -19,7 +19,7 @@ func NewCatalogHandler(service driverports.PostDriverPortInterface, baseHandler 
 }
 
 func (c *CatalogHandler) MainPage(w http.ResponseWriter, r *http.Request) {
-	posts, err := c.service.GetActive()
+	posts, err := c.service.GetActive(r.Context())
 	if err != nil {
 		c.handleError(w, r, 500, "failed to get", err)
 		c.RenderError(w, 500, "asd")

@@ -1,10 +1,12 @@
 package services
 
 import (
+	"context"
+	"fmt"
+
 	"backend/internal/core/domains/dto"
 	drivenports "backend/internal/core/ports/driven_ports"
 	"backend/utils"
-	"fmt"
 )
 
 type CommentService struct {
@@ -16,7 +18,7 @@ func NewCommentService(repo drivenports.CommentRepoInterface, imageCollector dri
 	return &CommentService{repo: repo, imageCollector: imageCollector}
 }
 
-func (commentService *CommentService) AddComment(comment dto.Comment, img []byte) error {
+func (commentService *CommentService) AddComment(comment dto.Comment, img []byte, ctx context.Context) error {
 	var err error
 	comment.CommentID = utils.UUID()
 	if len(comment.ParentID) == 0 {
@@ -26,17 +28,17 @@ func (commentService *CommentService) AddComment(comment dto.Comment, img []byte
 	if err != nil {
 		return err
 	}
-	err = commentService.repo.AddComment(comment)
+	err = commentService.repo.AddComment(comment, ctx)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (commentService *CommentService) GetCommentsByPostId(postId string) ([]dto.Comment, error) {
-	comments, err := commentService.repo.GetCommentsByPostId(postId)
+func (commentService *CommentService) GetCommentsByPostId(postId string, ctx context.Context) ([]dto.Comment, error) {
+	comments, err := commentService.repo.GetCommentsByPostId(postId, ctx)
 	for i := 0; i < len(comments); i++ {
-		comments[i].Replies, err = commentService.repo.GetCommentReplies(comments[i].CommentID)
+		comments[i].Replies, err = commentService.repo.GetCommentReplies(comments[i].CommentID, ctx)
 		fmt.Println(comments[i].Replies)
 		if err != nil {
 			return nil, err

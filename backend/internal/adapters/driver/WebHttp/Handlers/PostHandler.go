@@ -64,7 +64,7 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 	cookie, err := r.Cookie("session_id")
 	post.AuthorID = cookie.Value
 
-	err = postHandler.service.AddPost(post, img)
+	err = postHandler.service.AddPost(post, img, r.Context())
 	if err != nil {
 		postHandler.handleError(w, r, 500, "asd", err)
 		postHandler.RenderError(w, 500, "asd")
@@ -76,19 +76,19 @@ func (postsHandler *PostsHandler) PostPage(w http.ResponseWriter, r *http.Reques
 	postId := r.PathValue("id")
 	var page PostPage
 	var err error
-	page.Post, err = postsHandler.service.GetPostById(postId)
+	page.Post, err = postsHandler.service.GetPostById(postId, r.Context())
 	if err != nil {
 		postsHandler.handleError(w, r, 500, "asd", err)
 		postsHandler.RenderError(w, 500, "asd")
 		return
 	}
-	page.User, err = postsHandler.session.GetSessionById(page.Post.AuthorID)
+	page.User, err = postsHandler.session.GetSessionById(page.Post.AuthorID, r.Context())
 	if err != nil {
 		postsHandler.handleError(w, r, 500, "asd", err)
 		postsHandler.RenderError(w, 500, "asd")
 		return
 	}
-	page.Comments, err = postsHandler.comments.GetCommentsByPostId(postId)
+	page.Comments, err = postsHandler.comments.GetCommentsByPostId(postId, r.Context())
 	if err != nil {
 		postsHandler.handleError(w, r, 500, "asd", err)
 		postsHandler.RenderError(w, 500, "asd")

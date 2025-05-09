@@ -1,13 +1,13 @@
 package services
 
 import (
-	"backend/internal/core/domains/dao"
-	"backend/utils"
 	"context"
 	rnd "math/rand"
 	"sync"
 
+	"backend/internal/core/domains/dao"
 	drivenports "backend/internal/core/ports/driven_ports"
+	"backend/utils"
 )
 
 type SessionService struct {
@@ -62,9 +62,9 @@ func (s *SessionService) CreateSession(ctx context.Context) (string, error) {
 	return id, nil
 }
 
-func (s *SessionService) GetSessionById(id string) (dao.Session, error) {
+func (s *SessionService) GetSessionById(id string, ctx context.Context) (dao.Session, error) {
 	var session dao.Session
-	session, err := s.SessionRepo.GetSessionById(id)
+	session, err := s.SessionRepo.GetSessionById(id, ctx)
 	if err != nil {
 		return dao.Session{}, err
 	}

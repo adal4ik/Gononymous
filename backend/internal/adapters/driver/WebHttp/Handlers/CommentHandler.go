@@ -44,7 +44,7 @@ func (commentHandler *CommentHandler) SubmitComment(w http.ResponseWriter, r *ht
 	}
 	cookie, err := r.Cookie("session_id")
 	comment.UserID = cookie.Value
-	err = commentHandler.service.AddComment(comment, img)
+	err = commentHandler.service.AddComment(comment, img, r.Context())
 	if err != nil {
 		commentHandler.handleError(w, r, 500, "asd", err)
 		commentHandler.RenderError(w, 500, "asd")
