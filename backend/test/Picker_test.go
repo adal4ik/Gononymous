@@ -1,9 +1,8 @@
 package test
 
 import (
-	"testing"
-
 	"backend/internal/core/services"
+	"testing"
 )
 
 func TestPicker_Pick(t *testing.T) {

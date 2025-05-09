@@ -1,10 +1,9 @@
 package db
 
 import (
+	"backend/internal/core/domains/dto"
 	"context"
 	"database/sql"
-
-	"backend/internal/core/domains/dto"
 )
 
 type CommentRepository struct {

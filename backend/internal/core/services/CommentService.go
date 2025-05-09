@@ -1,12 +1,12 @@
 package services
 
 import (
+	"backend/internal/core/domains/dto"
+	"backend/utils"
 	"context"
 	"fmt"
 
-	"backend/internal/core/domains/dto"
 	drivenports "backend/internal/core/ports/driven_ports"
-	"backend/utils"
 )
 
 type CommentService struct {
