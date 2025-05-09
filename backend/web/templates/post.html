@@ -74,14 +74,31 @@
             padding: 0;
         }
 
-        .add-comment {
+        .replies {
+            list-style: none;
+            padding-left: 30px;
+            border-left: 2px solid #e1e4e8;
+            margin-top: 15px;
+        }
+
+        .reply-form {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .reply-form.active {
+            display: block;
+        }
+
+        .add-comment, .reply-form {
             background-color: #fff;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        .add-comment textarea {
+        .add-comment textarea,
+        .reply-form textarea {
             width: 100%;
             min-height: 100px;
             padding: 10px;
@@ -92,11 +109,13 @@
             margin-bottom: 10px;
         }
 
-        .add-comment input[type="file"] {
+        .add-comment input[type="file"],
+        .reply-form input[type="file"] {
             margin-bottom: 10px;
         }
 
-        .add-comment input[type="submit"] {
+        .add-comment input[type="submit"],
+        .reply-form input[type="submit"] {
             padding: 10px 20px;
             background-color: #3498db;
             color: white;
@@ -106,8 +125,23 @@
             cursor: pointer;
         }
 
-        .add-comment input[type="submit"]:hover {
+        .add-comment input[type="submit"]:hover,
+        .reply-form input[type="submit"]:hover {
             background-color: #2980b9;
+        }
+
+        .reply-btn {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .reply-btn:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -122,18 +156,18 @@
     <!-- Main Post -->
     <div class="post">
         <div class="header">
-            <img src="{{.UserAvatar}}" alt="avatar">
-            <b>{{.UserName}}</b> • {{.DataTime}} • ID: {{.PostID}}
+            <img src="{{.PostPage.User.AvatarURL}}" alt="avatar">
+            <b>{{.PostPage.User.Name}}</b> • {{.PostPage.Post.CreatedAt}} • ID: {{.PostPage.Post.ID}}
         </div>
         <div class="content">
-            {{if .ImageURL}}
-            <a href="{{.ImageURL}}">
-                <img src="{{.ImageURL}}" alt="Post Image">
+            {{if .PostPage.Post.Image}}
+            <a href="{{.PostPage.Post.Image}}">
+                <img src="{{.PostPage.Post.Image}}" alt="Post Image">
             </a>
             {{end}}
             <div class="text">
-                <h3>{{.Title}}</h3>
-                <p>{{.Content}}</p>
+                <h3>{{.PostPage.Post.Title}}</h3>
+                <p>{{.PostPage.Post.Content}}</p>
             </div>
         </div>
     </div>
@@ -141,14 +175,14 @@
     <!-- Comments -->
     <h2>Comments</h2>
     <ul class="comment-list">
-        {{range .Comments}}
-        <li class="comment">
+        {{range .PostPage.Comments}}
+        <li class="comment" id="comment-{{.CommentID}}">
             <div class="header">
-                <img src="{{.AvatarLink}}" alt="avatar">
-                <b>{{.UserName}}</b> • {{.DataTime}} • ID: {{.CommentID}}
+                <img src="{{.UserAvatarLink}}" alt="avatar">
+                <b>{{.UserName}}</b> • {{.CreatedAt}} • ID: {{.CommentID}}
             </div>
             <div class="content">
-                {{if .ImageURL}}
+                {{if .ImageUrl}}
                 <a href="{{.ImageURL}}">
                     <img src="{{.ImageURL}}" alt="Comment Image">
                 </a>
@@ -157,6 +191,45 @@
                     <p>{{.Content}}</p>
                 </div>
             </div>
+            
+            <!-- Reply button -->
+            <button class="reply-btn" onclick="toggleReplyForm('{{.CommentID}}')">Reply</button>
+            
+            <!-- Reply form (hidden by default) -->
+            <div class="reply-form" id="reply-form-{{.CommentID}}">
+                <h4>Reply to this comment</h4>
+                <form action="/submit-comment" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="postID" value="{{$.PostPage.Post.ID}}">
+                    <input type="hidden" name="parentCommentID" value="{{.CommentID}}">
+                    <textarea name="comment" placeholder="Write your reply here..."></textarea>
+                    <input name="file" type="file"><br>
+                    <input type="submit" value="Submit Reply">
+                </form>
+            </div>
+            
+            <!-- Replies list -->
+            {{if .Replies}}
+            <ul class="replies">
+                {{range .Replies}}
+                <li class="comment">
+                    <div class="header">
+                        <img src="{{.UserAvatarLink}}" alt="avatar">
+                        <b>{{.UserName}}</b> • {{.CreatedAt}} • ID: {{.CommentID}}
+                    </div>
+                    <div class="content">
+                        {{if .ImageUrl}}
+                        <a href="{{.ImageURL}}">
+                            <img src="{{.ImageURL}}" alt="Comment Image">
+                        </a>
+                        {{end}}
+                        <div class="text">
+                            <p>{{.Content}}</p>
+                        </div>
+                    </div>
+                </li>
+                {{end}}
+            </ul>
+            {{end}}
         </li>
         {{end}}
     </ul>
@@ -165,6 +238,7 @@
     <div class="add-comment">
         <h3>Add a Comment</h3>
         <form action="/submit-comment" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="postID" value="{{.PostPage.Post.ID}}">
             <textarea name="comment" placeholder="Write your comment here..."></textarea>
             <input name="file" type="file"><br>
             <input type="submit" value="Submit">
@@ -172,6 +246,13 @@
     </div>
 
 </main>
+
+<script>
+    function toggleReplyForm(commentID) {
+        const form = document.getElementById(`reply-form-${commentID}`);
+        form.classList.toggle('active');
+    }
+</script>
 
 </body>
 </html>

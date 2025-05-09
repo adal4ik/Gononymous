@@ -11,6 +11,7 @@ type Repository struct {
 	PostRepo      drivenports.DatabasePortInterface
 	SessionRepo   drivenports.SessionRepoInterface
 	CharacterRepo drivenports.CharacterRepoInterface
+	CommentRepo   drivenports.CommentRepoInterface
 }
 
 func New(db *sql.DB) *Repository {
@@ -18,5 +19,6 @@ func New(db *sql.DB) *Repository {
 		PostRepo:      NewPostRepository(db),
 		SessionRepo:   NewSessionRepo(db),
 		CharacterRepo: externalapi.NewCharacterClient(),
+		CommentRepo:   NewCommentRepository(db),
 	}
 }

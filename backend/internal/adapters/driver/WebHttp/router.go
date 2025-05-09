@@ -1,11 +1,10 @@
 package WebHttp
 
 import (
+	"backend/internal/adapters/driver/WebHttp/middleware"
 	"net/http"
 
 	driverports "backend/internal/core/ports/driver_ports"
-
-	"backend/internal/adapters/driver/WebHttp/middleware"
 
 	handlers "backend/internal/adapters/driver/WebHttp/Handlers"
 )
@@ -20,6 +19,10 @@ func Router(handlers *handlers.Handler, sessionservice driverports.SessionServic
 	// POST RELATED STAFF
 	mux.HandleFunc("/create-post", handlers.PostHandler.MainPage)
 	mux.HandleFunc("POST /submit-post", handlers.PostHandler.SubmitPostHandler)
+	mux.HandleFunc("/post/{id}", handlers.PostHandler.PostPage)
+
+	// COMMENT RELATED STUFF
+	mux.HandleFunc("POST /submit-comment", handlers.CommentHandler.SubmitComment)
 
 	var handler http.Handler = mux
 	handler = middleware.SessionHandler(mux, sessionservice)

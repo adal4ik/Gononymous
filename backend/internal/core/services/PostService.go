@@ -55,8 +55,10 @@ func (postService *PostService) GetPostById(id string) (dto.PostDto, error) {
 	var postDto dto.PostDto
 	postDto.ID = postDao.PostId
 	postDto.Image = postDao.ImageUrl
+	postDto.AuthorID = postDao.UserId
 	postDto.Content = postDao.Content
 	postDto.Subject = postDao.Subject
 	postDto.Title = postDao.Title
+	postDto.CreatedAt = postDao.CreatedAt
 	return postDto, nil
 }

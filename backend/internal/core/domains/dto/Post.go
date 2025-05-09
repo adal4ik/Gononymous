@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type PostDto struct {
 	ID        string
 	AuthorID  string
@@ -7,5 +9,5 @@ type PostDto struct {
 	Subject   string
 	Content   string
 	Image     string
-	CreatedAt string
+	CreatedAt time.Time
 }

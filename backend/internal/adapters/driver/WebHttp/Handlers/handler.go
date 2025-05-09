@@ -1,11 +1,10 @@
 package handlers
 
 import (
-	"log/slog"
-	"net/http"
-
 	"backend/internal/core/services"
 	"backend/utils"
+	"log/slog"
+	"net/http"
 )
 
 type BaseHandler struct {
@@ -39,8 +38,8 @@ func (b *BaseHandler) handleError(w http.ResponseWriter, r *http.Request, code i
 
 func New(service *services.Service, baseHandler BaseHandler) *Handler {
 	return &Handler{
-		PostHandler:    NewPostHandler(service.PostsService, baseHandler),
+		PostHandler:    NewPostHandler(service.PostsService, service.CommentService, service.SessionService, baseHandler),
 		CatalogHandler: NewCatalogHandler(service.PostsService),
-		// CommentHandler: NewCommentHandler(service.),
+		CommentHandler: NewCommentHandler(service.CommentService, baseHandler),
 	}
 }
