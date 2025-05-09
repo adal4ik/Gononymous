@@ -1,11 +1,14 @@
 package services
 
 import (
+	"context"
+	"log"
+	"time"
+
 	"backend/internal/core/domains/dao"
 	"backend/internal/core/domains/dto"
-	"backend/utils"
-
 	drivenports "backend/internal/core/ports/driven_ports"
+	"backend/utils"
 )
 
 type PostService struct {
@@ -59,4 +62,23 @@ func (postService *PostService) GetPostById(id string) (dto.PostDto, error) {
 	postDto.Subject = postDao.Subject
 	postDto.Title = postDao.Title
 	return postDto, nil
+}
+
+func (s *PostService) StartPostArchiver(ctx context.Context, interval time.Duration) {
+	ticker := time.NewTicker(interval)
+
+	go func() {
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				err := s.repo.ArchiveExpiredPosts(ctx)
+				if err != nil {
+					log.Println("Archiver error:", err)
+				}
+			}
+		}
+	}()
 }

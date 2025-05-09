@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 
 	"backend/internal/core/domains/dao"
@@ -16,7 +17,7 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 
 func (postRepository *PostRepository) AddPost(post dao.PostDao) error {
 	sqlQuery := `INSERT INTO posts(post_id, user_id, created_at, title, subject, content, image_url, status)
-				 VALUES ($1, $2, $3, $4, $5, $6, $7);`
+				VALUES ($1, $2, $3, $4, $5, $6, $7);`
 	_, err := postRepository.db.Exec(sqlQuery, post.PostId, post.UserId, post.CreatedAt, post.Title, post.Subject, post.Content, post.ImageUrl, post.Status)
 	if err != nil {
 		return err
@@ -57,4 +58,30 @@ func (postRepository *PostRepository) GetPostById(id string) (dao.PostDao, error
 		return dao.PostDao{}, err
 	}
 	return post, nil
+}
+
+func (r *PostRepository) ArchiveExpiredPosts(ctx context.Context) error {
+	query := `
+		UPDATE posts
+		SET status = 'archived'
+		WHERE status != 'archived' AND (
+			-- Посты без комментариев, старше 10 минут
+			(NOT EXISTS (
+				SELECT 1 FROM comments WHERE comments.post_id = posts.post_id
+			) AND created_at <= NOW() - INTERVAL '10 minutes')
+
+			OR
+
+			-- Посты с комментариями, старше 15 минут
+			(EXISTS (
+				SELECT 1 FROM comments WHERE comments.post_id = posts.post_id
+			) AND created_at <= NOW() - INTERVAL '15 minutes')
+		);
+	`
+
+	_, err := r.db.ExecContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	return nil
 }
