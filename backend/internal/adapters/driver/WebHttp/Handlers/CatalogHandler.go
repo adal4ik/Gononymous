@@ -4,7 +4,6 @@ import (
 	"backend/internal/core/domains/dto"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 
 	driverports "backend/internal/core/ports/driver_ports"
@@ -12,19 +11,21 @@ import (
 
 type CatalogHandler struct {
 	service driverports.PostDriverPortInterface
+	BaseHandler
 }
 
-func NewCatalogHandler(service driverports.PostDriverPortInterface) *CatalogHandler {
-	return &CatalogHandler{service: service}
+func NewCatalogHandler(service driverports.PostDriverPortInterface, baseHandler BaseHandler) *CatalogHandler {
+	return &CatalogHandler{service: service, BaseHandler: baseHandler}
 }
 
 func (c *CatalogHandler) MainPage(w http.ResponseWriter, r *http.Request) {
-	posts, err := c.service.GetActive()
+	posts, err := c.service.GetActive(r.Context())
 	if err != nil {
-		fmt.Println(err.Error())
+		c.handleError(w, r, 500, "failed to get", err)
+		c.RenderError(w, 500, "fail")
 		return
-	}
 
+	}
 	tmpl := template.Must(template.ParseFiles("web/templates/catalog.html"))
 	HTMLXposts := map[string][]dto.PostDto{
 		"Posts": posts,
@@ -32,7 +33,8 @@ func (c *CatalogHandler) MainPage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(HTMLXposts)
 	err = tmpl.Execute(w, HTMLXposts)
 	if err != nil {
-		log.Printf("Template execution error: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		c.handleError(w, r, 500, "failed to get", err)
+		c.RenderError(w, 500, "fail")
+		return
 	}
 }

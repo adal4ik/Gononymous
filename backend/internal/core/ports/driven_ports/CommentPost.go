@@ -1,9 +1,13 @@
 package drivenports
 
-import "backend/internal/core/domains/dto"
+import (
+	"context"
+
+	"backend/internal/core/domains/dto"
+)
 
 type CommentRepoInterface interface {
-	AddComment(comment dto.Comment) error
-	GetCommentsByPostId(id string) ([]dto.Comment, error)
-	GetCommentReplies(commentId string) ([]dto.Comment, error)
+	AddComment(comment dto.Comment, ctx context.Context) error
+	GetCommentsByPostId(id string, ctx context.Context) ([]dto.Comment, error)
+	GetCommentReplies(commentId string, ctx context.Context) ([]dto.Comment, error)
 }

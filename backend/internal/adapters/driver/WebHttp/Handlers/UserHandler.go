@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -41,18 +40,21 @@ func (u *UserHandler) ProfilePage(w http.ResponseWriter, r *http.Request) {
 	var page ProfilePage
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		http.Error(w, "Session cookie missing", http.StatusUnauthorized)
+		u.handleError(w, r, 500, "Fail", err)
+		u.RenderError(w, 500, "Fail")
 		return
 	}
 	userId := cookie.Value
-	page.UserData, err = u.session.GetSessionById(userId)
+	page.UserData, err = u.session.GetSessionById(userId, r.Context())
 	if err != nil {
-		http.Error(w, "Session cookie missing", http.StatusUnauthorized)
+		u.handleError(w, r, 401, "Fail", err)
+		u.RenderError(w, 401, "Fail")
 		return
 	}
-	page.Posts, err = u.postService.GetPostsByUserID(userId)
+	page.Posts, err = u.postService.GetPostsByUserID(userId, r.Context())
 	if err != nil {
-		http.Error(w, "Session cookie missing", http.StatusUnauthorized)
+		u.handleError(w, r, 401, "Fail", err)
+		u.RenderError(w, 401, "Fail")
 		return
 	}
 	tmpl := template.Must(template.ParseFiles("web/templates/profile.html"))
@@ -61,32 +63,36 @@ func (u *UserHandler) ProfilePage(w http.ResponseWriter, r *http.Request) {
 	}
 	err = tmpl.Execute(w, HTMLXposts)
 	if err != nil {
-		log.Printf("Template execution error: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		u.handleError(w, r, 500, "Fail", err)
+		u.RenderError(w, 500, "Fail")
 	}
 }
 
 func (u *UserHandler) ChangeName(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		http.Error(w, "Session cookie missing", http.StatusUnauthorized)
+		u.handleError(w, r, 401, "Fail", err)
+		u.RenderError(w, 401, "Fail")
 		return
 	}
 	userId := cookie.Value
 	var request NameChangeRequest
 	err = json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		u.handleError(w, r, 400, "Fail", err)
+		u.RenderError(w, 400, "Fail")
 		return
 	}
 	newName := strings.TrimSpace(request.Name)
 	if newName == "" {
-		http.Error(w, "Name cannot be empty", http.StatusBadRequest)
+		u.handleError(w, r, 400, "Fail", err)
+		u.RenderError(w, 400, "Fail")
 		return
 	}
-	fmt.Println("Here2")
+
 	if len(newName) > 50 {
-		http.Error(w, "Name too long (max 50 characters)", http.StatusBadRequest)
+		u.handleError(w, r, 400, "Fail <50", err)
+		u.RenderError(w, 400, "Fail <50")
 		return
 	}
 	fmt.Println("Here3")

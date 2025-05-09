@@ -5,7 +5,6 @@ import (
 	"backend/internal/core/domains/dto"
 	"html/template"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 
@@ -38,7 +37,8 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 	var size int64
 	size = r.ContentLength
 	if err := r.ParseMultipartForm(size); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		postHandler.handleError(w, r, 500, "asd", err)
+		postHandler.RenderError(w, 500, "asd")
 		return
 	}
 
@@ -59,30 +59,35 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 	if err == nil {
 		defer file.Close()
 		if header.Size > 10<<20 {
-			http.Error(w, "File too large (max 10MB)", http.StatusBadRequest)
+			postHandler.handleError(w, r, 500, "to much size of file", err)
+			postHandler.RenderError(w, 500, "to much size of file")
 			return
 		}
 
 		img, err = io.ReadAll(file)
 		if err != nil {
-			http.Error(w, "Error reading file", http.StatusInternalServerError)
+			postHandler.handleError(w, r, 500, "Fail", err)
+			postHandler.RenderError(w, 500, "Fail")
 			return
 		}
 	} else if err != http.ErrMissingFile {
-		http.Error(w, "Error processing file upload", http.StatusBadRequest)
+		postHandler.handleError(w, r, 400, "Fail", err)
+		postHandler.RenderError(w, 400, "Fail")
 		return
 	}
 
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		http.Error(w, "Session cookie missing", http.StatusUnauthorized)
+		postHandler.handleError(w, r, 500, "Fail", err)
+		postHandler.RenderError(w, 500, "Fail")
 		return
 	}
 	post.AuthorID = cookie.Value
 
-	err = postHandler.service.AddPost(post, img)
+	err = postHandler.service.AddPost(post, img, r.Context())
 	if err != nil {
-		http.Error(w, "Error saving post", http.StatusInternalServerError)
+		postHandler.handleError(w, r, 500, "Fail", err)
+		postHandler.RenderError(w, 500, "Fail")
 		return
 	}
 }
@@ -91,19 +96,22 @@ func (postsHandler *PostsHandler) PostPage(w http.ResponseWriter, r *http.Reques
 	postId := r.PathValue("id")
 	var page PostPage
 	var err error
-	page.Post, err = postsHandler.service.GetPostById(postId)
+	page.Post, err = postsHandler.service.GetPostById(postId, r.Context())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		postsHandler.handleError(w, r, 500, "Fail", err)
+		postsHandler.RenderError(w, 500, "Fail")
 		return
 	}
-	page.User, err = postsHandler.session.GetSessionById(page.Post.AuthorID)
+	page.User, err = postsHandler.session.GetSessionById(page.Post.AuthorID, r.Context())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		postsHandler.handleError(w, r, 500, "Fail", err)
+		postsHandler.RenderError(w, 500, "Fail")
 		return
 	}
-	page.Comments, err = postsHandler.comments.GetCommentsByPostId(postId)
+	page.Comments, err = postsHandler.comments.GetCommentsByPostId(postId, r.Context())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		postsHandler.handleError(w, r, 500, "Fail", err)
+		postsHandler.RenderError(w, 500, "Fail")
 		return
 	}
 	tmpl := template.Must(template.ParseFiles("web/templates/post.html"))
@@ -112,7 +120,8 @@ func (postsHandler *PostsHandler) PostPage(w http.ResponseWriter, r *http.Reques
 	}
 	err = tmpl.Execute(w, HTMLXposts)
 	if err != nil {
-		log.Printf("Template execution error: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		postsHandler.handleError(w, r, 500, "Fail", err)
+		postsHandler.RenderError(w, 500, "Fail")
+		return
 	}
 }

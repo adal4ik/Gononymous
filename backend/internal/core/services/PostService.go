@@ -20,7 +20,7 @@ func NewPostService(repo drivenports.DatabasePortInterface, imageCollector drive
 	return &PostService{repo: repo, imageCollector: imageCollector}
 }
 
-func (postService *PostService) AddPost(post dto.PostDto, data []byte) error {
+func (postService *PostService) AddPost(post dto.PostDto, data []byte, ctx context.Context) error {
 	var err error
 	postDao := dao.ParseDTOtoDAO(post)
 	postDao.UserId = post.AuthorID
@@ -30,15 +30,15 @@ func (postService *PostService) AddPost(post dto.PostDto, data []byte) error {
 	if err != nil {
 		return err
 	}
-	err = postService.repo.AddPost(postDao)
+	err = postService.repo.AddPost(postDao, ctx)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (postService *PostService) GetActive() ([]dto.PostDto, error) {
-	posts, err := postService.repo.GetActive()
+func (postService *PostService) GetActive(ctx context.Context) ([]dto.PostDto, error) {
+	posts, err := postService.repo.GetActive(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +50,8 @@ func (postService *PostService) GetActive() ([]dto.PostDto, error) {
 	return postsDTO, nil
 }
 
-func (postService *PostService) GetAll() ([]dto.PostDto, error) {
-	posts, err := postService.repo.GetAll()
+func (postService *PostService) GetAll(ctx context.Context) ([]dto.PostDto, error) {
+	posts, err := postService.repo.GetAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +63,8 @@ func (postService *PostService) GetAll() ([]dto.PostDto, error) {
 	return postsDTO, nil
 }
 
-func (postService *PostService) GetPostById(id string) (dto.PostDto, error) {
-	postDao, err := postService.repo.GetPostById(id)
+func (postService *PostService) GetPostById(id string, ctx context.Context) (dto.PostDto, error) {
+	postDao, err := postService.repo.GetPostById(id, ctx)
 	if err != nil {
 		return dto.PostDto{}, err
 	}
@@ -79,8 +79,8 @@ func (postService *PostService) GetPostById(id string) (dto.PostDto, error) {
 	return postDto, nil
 }
 
-func (postService *PostService) GetPostsByUserID(userId string) ([]dto.PostDto, error) {
-	posts, err := postService.repo.GetPostsByUserID(userId)
+func (postService *PostService) GetPostsByUserID(userId string, ctx context.Context) ([]dto.PostDto, error) {
+	posts, err := postService.repo.GetPostsByUserID(userId, ctx)
 	if err != nil {
 		return nil, err
 	}

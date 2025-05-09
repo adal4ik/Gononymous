@@ -1,8 +1,10 @@
 package db
 
 import (
-	"backend/internal/core/domains/dto"
+	"context"
 	"database/sql"
+
+	"backend/internal/core/domains/dto"
 )
 
 type CommentRepository struct {
@@ -13,22 +15,22 @@ func NewCommentRepository(db *sql.DB) *CommentRepository {
 	return &CommentRepository{db: db}
 }
 
-func (commentRepository *CommentRepository) AddComment(comment dto.Comment) error {
+func (commentRepository *CommentRepository) AddComment(comment dto.Comment, ctx context.Context) error {
 	sqlQuery := `INSERT INTO comments(comment_id, post_id, parent_id, user_id, content, image_url)
 				VALUES($1, $2, $3, $4, $5, $6);`
-	_, err := commentRepository.db.Exec(sqlQuery, comment.CommentID, comment.PostID, comment.ParentID, comment.UserID, comment.Content, comment.ImageUrl)
+	_, err := commentRepository.db.ExecContext(ctx, sqlQuery, comment.CommentID, comment.PostID, comment.ParentID, comment.UserID, comment.Content, comment.ImageUrl)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (commentRepository *CommentRepository) GetCommentsByPostId(id string) ([]dto.Comment, error) {
+func (commentRepository *CommentRepository) GetCommentsByPostId(id string, ctx context.Context) ([]dto.Comment, error) {
 	sqlQuery := `SELECT c.comment_id, c.post_id, c.parent_id, c.user_id, u.name , u.avatar_url , c.content, c.image_url 
 				FROM comments as c
 				JOIN users as u on u.user_id = c.user_id
 				WHERE c.post_id = $1 AND c.parent_id = '00000000-0000-0000-0000-000000000000';`
-	rows, err := commentRepository.db.Query(sqlQuery, id)
+	rows, err := commentRepository.db.QueryContext(ctx, sqlQuery, id)
 	if err != nil {
 		return nil, err
 	}
@@ -49,12 +51,12 @@ func (commentRepository *CommentRepository) GetCommentsByPostId(id string) ([]dt
 	return comments, nil
 }
 
-func (commentRepository *CommentRepository) GetCommentReplies(commentId string) ([]dto.Comment, error) {
+func (commentRepository *CommentRepository) GetCommentReplies(commentId string, ctx context.Context) ([]dto.Comment, error) {
 	sqlQuery := `SELECT c.comment_id, c.post_id, c.parent_id, c.user_id, u.name , u.avatar_url , c.content, c.image_url 
 				FROM comments as c
 				JOIN users as u on u.user_id = c.user_id
 				WHERE c.parent_id = $1;`
-	rows, err := commentRepository.db.Query(sqlQuery, commentId)
+	rows, err := commentRepository.db.QueryContext(ctx, sqlQuery, commentId)
 	if err != nil {
 		return nil, err
 	}

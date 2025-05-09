@@ -33,7 +33,7 @@ func SessionHandler(next http.Handler, sessionService driverports.SessionService
 				HttpOnly: true,
 			})
 		} else {
-			c, _ := sessionService.GetSessionById(cookie.Value)
+			c, _ := sessionService.GetSessionById(cookie.Value, r.Context())
 			if len(c.Name) == 0 {
 				id, err := sessionService.CreateSession(r.Context())
 				if err != nil {

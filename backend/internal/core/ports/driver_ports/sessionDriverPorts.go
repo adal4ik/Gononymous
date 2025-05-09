@@ -1,11 +1,12 @@
 package driverports
 
 import (
-	"backend/internal/core/domains/dao"
 	"context"
+
+	"backend/internal/core/domains/dao"
 )
 
 type SessionServiceDriverInterface interface {
 	CreateSession(ctx context.Context) (string, error)
-	GetSessionById(id string) (dao.Session, error)
+	GetSessionById(id string,ctx context.Context) (dao.Session, error)
 }
