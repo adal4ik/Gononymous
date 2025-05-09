@@ -31,11 +31,9 @@ func main() {
 	services := services.New(repositories)
 	handlers := handlers.New(services, *baseHandler)
 
-	// ⬇️ Создаем context для фоновых задач
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
-	// ⬇️ Запускаем фоновую задачу архивирования постов
 	services.PostsService.StartPostArchiver(ctx, time.Minute)
 
 	mux := WebHttp.Router(handlers, services.SessionService)
@@ -45,7 +43,6 @@ func main() {
 		Handler: mux,
 	}
 
-	// Запускаем HTTP сервер в отдельной горутине
 	go func() {
 		fmt.Println("Server is running on port: http://localhost" + cli.Port)
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -53,7 +50,6 @@ func main() {
 		}
 	}()
 
-	// Ждем завершения (Ctrl+C)
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {

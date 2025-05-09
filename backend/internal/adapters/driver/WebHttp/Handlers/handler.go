@@ -20,6 +20,7 @@ type Handler struct {
 	PostHandler    *PostsHandler
 	CatalogHandler *CatalogHandler
 	CommentHandler *CommentHandler
+	UserHandler    *UserHandler
 }
 
 func (b *BaseHandler) handleError(w http.ResponseWriter, r *http.Request, code int, message string, err error) {
@@ -42,5 +43,6 @@ func New(service *services.Service, baseHandler BaseHandler) *Handler {
 		PostHandler:    NewPostHandler(service.PostsService, baseHandler),
 		CatalogHandler: NewCatalogHandler(service.PostsService),
 		// CommentHandler: NewCommentHandler(service.),
+		UserHandler: NewUserHandler(service.UserService, baseHandler),
 	}
 }

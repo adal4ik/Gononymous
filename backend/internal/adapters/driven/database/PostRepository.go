@@ -65,14 +65,12 @@ func (r *PostRepository) ArchiveExpiredPosts(ctx context.Context) error {
 		UPDATE posts
 		SET status = 'archived'
 		WHERE status != 'archived' AND (
-			-- Посты без комментариев, старше 10 минут
 			(NOT EXISTS (
 				SELECT 1 FROM comments WHERE comments.post_id = posts.post_id
 			) AND created_at <= NOW() - INTERVAL '10 minutes')
 
 			OR
 
-			-- Посты с комментариями, старше 15 минут
 			(EXISTS (
 				SELECT 1 FROM comments WHERE comments.post_id = posts.post_id
 			) AND created_at <= NOW() - INTERVAL '15 minutes')
