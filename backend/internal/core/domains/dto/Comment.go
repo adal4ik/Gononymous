@@ -1,5 +1,14 @@
 package dto
 
 type Comment struct {
-	Name string
+	CommentID      string
+	PostID         string
+	ParentID       string
+	UserID         string
+	UserName       string
+	UserAvatarLink string
+	Content        string
+	ImageUrl       string
+	CreatedAt      string
+	Replies        []Comment
 }

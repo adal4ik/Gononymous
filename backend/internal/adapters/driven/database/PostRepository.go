@@ -1,10 +1,9 @@
 package db
 
 import (
+	"backend/internal/core/domains/dao"
 	"context"
 	"database/sql"
-
-	"backend/internal/core/domains/dao"
 )
 
 type PostRepository struct {
@@ -16,9 +15,9 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 }
 
 func (postRepository *PostRepository) AddPost(post dao.PostDao) error {
-	sqlQuery := `INSERT INTO posts(post_id, user_id, created_at, title, subject, content, image_url, status)
-				VALUES ($1, $2, $3, $4, $5, $6, $7);`
-	_, err := postRepository.db.Exec(sqlQuery, post.PostId, post.UserId, post.CreatedAt, post.Title, post.Subject, post.Content, post.ImageUrl, post.Status)
+	sqlQuery := `INSERT INTO posts(post_id, user_id,  title, subject, content, image_url, status)
+				 VALUES ($1, $2, $3, $4, $5, $6, $7);`
+	_, err := postRepository.db.Exec(sqlQuery, post.PostId, post.UserId, post.Title, post.Subject, post.Content, post.ImageUrl, post.Status)
 	if err != nil {
 		return err
 	}
@@ -26,7 +25,7 @@ func (postRepository *PostRepository) AddPost(post dao.PostDao) error {
 }
 
 func (postRepository *PostRepository) GetAll() ([]dao.PostDao, error) {
-	sqlQuery := `SELECT post_id, created_at, title, subject, content,image_url FROM posts;`
+	sqlQuery := `SELECT post_id, created_at, title, subject, content,image_url FROM posts WHERE status = 'Active';`
 	rows, err := postRepository.db.Query(sqlQuery)
 	if err != nil {
 		return nil, err
@@ -49,11 +48,11 @@ func (postRepository *PostRepository) GetAll() ([]dao.PostDao, error) {
 }
 
 func (postRepository *PostRepository) GetPostById(id string) (dao.PostDao, error) {
-	sqlQuery := `SELECT post_id, created_at, title, subject, content,image_url FROM posts WHERE post_id = $1;`
+	sqlQuery := `SELECT post_id,user_id, created_at, title, subject, content,image_url FROM posts WHERE post_id = $1;`
 	row := postRepository.db.QueryRow(sqlQuery, id)
 
 	var post dao.PostDao
-	err := row.Scan(&post.PostId, &post.CreatedAt, &post.Title, &post.Subject, &post.Content, &post.ImageUrl)
+	err := row.Scan(&post.PostId, &post.UserId, &post.CreatedAt, &post.Title, &post.Subject, &post.Content, &post.ImageUrl)
 	if err != nil {
 		return dao.PostDao{}, err
 	}

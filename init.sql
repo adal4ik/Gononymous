@@ -21,11 +21,11 @@ CREATE TABLE posts (
     status post_status NOT NULL DEFAULT 'Active'
 );
 
-CREATE TABLE comments (
-    comment_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    post_id UUID REFERENCES posts(post_id) ON DELETE CASCADE,
-    parent_id UUID REFERENCES comments(comment_id) ON DELETE CASCADE,
-    user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+CREATE TABLE comments(
+    comment_id UUID PRIMARY KEY,
+    post_id UUID REFERENCES posts(post_id),
+    parent_id UUID  DEFAULT NULL,
+    user_id  UUID REFERENCES users(user_id),
     content TEXT,
     image_url TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()

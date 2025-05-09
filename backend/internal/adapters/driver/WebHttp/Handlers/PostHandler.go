@@ -1,24 +1,32 @@
 package handlers
 
 import (
+	"backend/internal/core/domains/dao"
+	"backend/internal/core/domains/dto"
 	"fmt"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
 
-	"backend/internal/core/domains/dto"
-
 	driverports "backend/internal/core/ports/driver_ports"
 )
 
 type PostsHandler struct {
-	service driverports.PostDriverPortInterface
+	service  driverports.PostDriverPortInterface
+	comments driverports.CommentServiceInterface
+	session  driverports.SessionServiceDriverInterface
 	BaseHandler
 }
 
-func NewPostHandler(service driverports.PostDriverPortInterface, baseHandler BaseHandler) *PostsHandler {
-	return &PostsHandler{service: service, BaseHandler: baseHandler}
+func NewPostHandler(service driverports.PostDriverPortInterface, comments driverports.CommentServiceInterface, session driverports.SessionServiceDriverInterface, baseHandler BaseHandler) *PostsHandler {
+	return &PostsHandler{service: service, comments: comments, session: session, BaseHandler: baseHandler}
+}
+
+type PostPage struct {
+	User     dao.Session
+	Post     dto.PostDto
+	Comments []dto.Comment
 }
 
 func (postHandler *PostsHandler) MainPage(w http.ResponseWriter, r *http.Request) {
@@ -33,19 +41,29 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	var err error
+	var img []byte
 	var post dto.PostDto
 	post.Title = r.Form["name"][0]
 	post.Subject = r.Form["subject"][0]
 	post.Content = r.Form["comment"][0]
-	in, _, err := r.FormFile("file")
-	defer in.Close()
+	if len(r.FormValue("file")) != 0 {
+		in, _, err := r.FormFile("file")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		defer in.Close()
+		img, err = io.ReadAll(in)
+	}
 	if err != nil {
 		fmt.Println(err.Error())
+		return
 	}
 	cookie, err := r.Cookie("session_id")
 	post.AuthorID = cookie.Value
-	data, err := io.ReadAll(in)
-	err = postHandler.service.AddPost(post, data)
+
+	err = postHandler.service.AddPost(post, img)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -53,16 +71,27 @@ func (postHandler *PostsHandler) SubmitPostHandler(w http.ResponseWriter, r *htt
 
 func (postsHandler *PostsHandler) PostPage(w http.ResponseWriter, r *http.Request) {
 	postId := r.PathValue("id")
-	post, err := postsHandler.service.GetPostById(postId)
+	var page PostPage
+	var err error
+	page.Post, err = postsHandler.service.GetPostById(postId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	page.User, err = postsHandler.session.GetSessionById(page.Post.AuthorID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	page.Comments, err = postsHandler.comments.GetCommentsByPostId(postId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	tmpl := template.Must(template.ParseFiles("web/templates/post.html"))
-	HTMLXposts := map[string]dto.PostDto{
-		"Post": post,
+	HTMLXposts := map[string]PostPage{
+		"PostPage": page,
 	}
-	fmt.Println(HTMLXposts)
 	err = tmpl.Execute(w, HTMLXposts)
 	if err != nil {
 		log.Printf("Template execution error: %v", err)

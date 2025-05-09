@@ -1,13 +1,12 @@
 package s3
 
 import (
+	"backend/utils"
 	"bytes"
 	"crypto/tls"
 	"fmt"
 	"net/http"
 	"path/filepath"
-
-	"backend/utils"
 )
 
 type S3ImageCollector struct {
@@ -22,6 +21,9 @@ func NewS3ImageCollector() *S3ImageCollector {
 }
 
 func (s *S3ImageCollector) SaveImage(img []byte) (string, error) {
+	if len(img) == 0 {
+		return "", nil
+	}
 	bucket := "images/"
 
 	ext, err := detectImageExtension(img)
